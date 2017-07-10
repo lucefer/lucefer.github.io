@@ -378,6 +378,7 @@ margin on the iframe, cause it breaks stuff. */
 }
 
 .blog-logo {
+    display: none;
     text-decoration: none;
 }
 /* Create a bouncing scroll-down arrow on homepage with cover image */
@@ -424,6 +425,7 @@ margin on the iframe, cause it breaks stuff. */
     width: auto;
     margin: 0 auto;
     line-height: 0;
+    border-radius: 100%
 }
 
 /* The details of your blog. Defined in ghost/settings/ */
@@ -574,6 +576,7 @@ margin on the iframe, cause it breaks stuff. */
 .post-template .site-head {
     color: #FFF;
     border-bottom: #ebf2f6 1px solid;
+    height: 60vh;
     /*background: none !important;*/
 }
 
@@ -996,7 +999,9 @@ pre .chunk {
    ========================================================================== */
 
 @media only screen and (max-width: 900px) {
-
+    .scroll-down{
+      display: none;
+    }
     blockquote {
         margin-left: 0;
     }
@@ -1062,7 +1067,9 @@ pre .chunk {
     .blog-logo img {
         max-height: 80px;
     }
-
+    .scroll-down{
+      display: none;
+    }
     .inner,
     .pagination {
         width: auto;
@@ -1083,7 +1090,9 @@ pre .chunk {
     }
 
     .blog-title {
-        font-size: 3rem;
+        font-size: 2.5rem;
+        letter-spacing: 1px;
+        font-weight: normal
     }
 
     .blog-description {
