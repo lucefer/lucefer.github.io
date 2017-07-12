@@ -29,53 +29,9 @@
    1. Icons - Sets up the icon font and respective classes
    ========================================================================== */
 
-/* Import the font file with the icons in it */
-@font-face {
-    font-family: 'icons';
-    src:url('../fonts/icons.eot');
-    src:url('../fonts/icons.eot?#iefix') format('embedded-opentype'),
-        url('../fonts/icons.woff') format('woff'),
-        url('../fonts/icons.ttf') format('truetype'),
-        url('../fonts/icons.svg#icons') format('svg');
-    font-weight: normal;
-    font-style: normal;
-}
 
-/* Apply these base styles to all icons */
-.icon-ghost:before,
-.icon-feed:before,
-.icon-twitter:before,
-.icon-google-plus:before,
-.icon-facebook:before {
-    font-family: 'icons';
-    speak: none;
-    font-style: normal;
-    font-weight: normal;
-    font-variant: normal;
-    text-transform: none;
-    line-height: 1;
-    -webkit-font-smoothing: antialiased;
-    text-decoration: none;
-}
 
-/* Each icon is created by inserting the corret character into the
-   content of the :before pseudo element. Like a boss. */
-.icon-ghost:before {
-    content: "\e000";
-}
-.icon-feed:before {
-    content: "\e001";
-}
-.icon-twitter:before {
-    content: "\e002";
-    font-size: 1.1em;
-}
-.icon-google-plus:before {
-    content: "\e003";
-}
-.icon-facebook:before {
-    content: "\e004";
-}
+
 
 
 /* ==========================================================================
@@ -86,17 +42,97 @@ html {
     height: 100%;
     max-height: 100%;
     font-size: 62.5%;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
 body {
     height: 100%;
     max-height: 100%;
-    font-family: 'Noto Serif', serif;
-    font-size: 2.0rem;
+    font-family: -apple-system,"Helvetica Neue",Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","WenQuanYi Micro Hei",sans-serif;
+    font-size: 1.7rem;
     line-height: 1.6em;
     color: #3A4145;
+    text-rendering: geometricPrecision;
+    -webkit-font-feature-settings: 'kern' 1;
+    -moz-font-feature-settings: 'kern' 1;
+    -o-font-feature-settings: 'kern' 1;
+    letter-spacing: 0.01rem;
+}
+/* Navigation */
+body.nav-opened .nav-cover {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 240px;
+    bottom: 0;
+    z-index: 200;
+}
+.main-nav {
+    position: relative;
+    padding: 35px 40px;
+    margin: 0 0 30px 0;
 }
 
+.main-nav a {
+    text-decoration: none;
+    font-family: 'Open Sans', sans-serif;
+}
+.nav {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 5;
+    width: 240px;
+    opacity: 0;
+    background: #111;
+    margin-bottom: 0;
+    text-align: left;
+    overflow-y: auto;
+    -webkit-transition: -webkit-transform 0.5s ease,
+                        opacity 0.3s ease 0.7s;
+            transition: transform 0.5s ease,
+                        opacity 0.3s ease 0.7s;
+font-family: "Open Sans","Myriad Pro","Lucida Grande","Lucida Sans Unicode","Lucida Sans",Geneva,Verdana,sans-serif;
+font-weight: 700;
+font-size: 11px;
+color: #909090;
+}
+/* Wraps the main content & footer */
+.site-wrapper {
+    position: relative;
+    z-index: 10;
+    min-height: 100%;
+    background: #fff;
+    -webkit-transition: -webkit-transform 0.5s ease;
+            transition: transform 0.5s ease;
+}
+
+body.nav-opened .site-wrapper {
+    overflow-x: hidden;
+    -webkit-transform: translate3D(-240px, 0, 0);
+        -ms-transform: translate3D(-240px, 0, 0);
+            transform: translate3D(-240px, 0, 0);
+    -webkit-transition: -webkit-transform 0.3s ease;
+            transition: transform 0.3s ease;
+            z-index:4
+}
+body.nav-closed .nav {
+    -webkit-transform: translate3D(97px, 0, 0);
+        -ms-transform: translate3D(97px, 0, 0);
+            transform: translate3D(97px, 0, 0);
+}
+
+body.nav-opened .nav {
+    opacity: 1;
+    -webkit-transition: -webkit-transform 0.3s ease,
+                        opacity 0s ease 0s;
+            transition: transform 0.3s ease,
+                        opacity 0s ease 0s;
+    -webkit-transform: translate3D(0, 0, 0);
+        -ms-transform: translate3D(0, 0, 0);
+            transform: translate3D(0, 0, 0);
+}
 ::-moz-selection {
     color: #222;
     background: #D6EDFF;
@@ -112,39 +148,39 @@ body {
 h1, h2, h3,
 h4, h5, h6 {
     text-rendering: optimizeLegibility;
-    line-height: 1;
-    margin-top: 0;
+    line-height: 1.15em;
+    margin: 0 0 0.4em 0;
     font-family: 'Open Sans', sans-serif;
 }
 
 h1 {
-    font-size: 5rem;
+    font-size: 3.2rem;
     line-height: 1.2em;
     letter-spacing: -2px;
     text-indent: -3px;
 }
 
 h2 {
-    font-size: 4rem;
+    font-size: 2.8rem;
     line-height: 1.2em;
     letter-spacing: -1px;
     text-indent: -2px;
 }
 
 h3 {
-    font-size: 3.5rem;
-}
-
-h4 {
-    font-size: 3rem;
-}
-
-h5 {
     font-size: 2.5rem;
 }
 
+h4 {
+    font-size: 2.2rem;
+}
+
+h5 {
+    font-size: 2.0rem;
+}
+
 h6 {
-    font-size: 2rem;
+    font-size: 1.8rem;
 }
 
 a {
@@ -163,7 +199,7 @@ h4 a, h5 a, h6 a {
 
 
 p, ul, ol, dl {
-    margin: 1.6em 0;
+    margin: 1em 0;
 }
 
 ol ol, ul ul,
@@ -250,7 +286,7 @@ pre {
     font-size: 0.9em;
     white-space: pre;
     overflow: auto;
-    background: #F7FAFB;
+    background: #21252B;
     border-radius: 3px;
 }
 
@@ -261,6 +297,128 @@ pre code, tt {
     background: transparent;
     border: none;
     padding: 0;
+}
+.nav-title {
+    position: absolute;
+    top: 45px;
+    left: 30px;
+    font-size: 16px;
+    font-weight: 100;
+    text-transform: uppercase;
+    color: #fff;
+}
+
+.nav-title-tag {
+    position: absolute;
+    top: 300px;
+    left: 30px;
+    font-size: 16px;
+    font-weight: 100;
+    text-transform: uppercase;
+    color: #fff;
+}
+
+.nav-close {
+    position: absolute;
+    top: 38px;
+    right: 25px;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    font-size: 10px;
+}
+
+.nav-close:focus {
+    outline: 0;
+}
+
+.nav-close:before,
+.nav-close:after {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 20px;
+    height: 1px;
+    background: rgb(150,150,150);
+    top: 15px;
+    -webkit-transition: background 0.15s ease;
+            transition: background 0.15s ease;
+}
+
+.nav-close:before {
+    -webkit-transform: rotate(45deg);
+        -ms-transform: rotate(45deg);
+            transform: rotate(45deg);
+}
+
+.nav-close:after {
+    -webkit-transform: rotate(-45deg);
+        -ms-transform: rotate(-45deg);
+            transform: rotate(-45deg);
+}
+
+.nav-close:hover:before,
+.nav-close:hover:after {
+    background: rgb(255,255,255);
+}
+
+.nav ul {
+    padding: 90px 9% 5%;
+    list-style: none;
+    counter-reset: item;
+}
+
+.nav li:before {
+    display: block;
+    float: right;
+    padding-right: 4%;
+    padding-left: 5px;
+    text-align: right;
+    font-size: 1.2rem;
+    vertical-align: bottom;
+    color: #B8B8B8;
+    content: counter(item, lower-roman);
+    counter-increment: item;
+}
+.nav li {
+    margin: 0;
+}
+.nav li a {
+    text-decoration: none;
+    line-height: 1.4;
+    font-size: 1.4rem;
+    display: block;
+    padding: 0.6rem 4%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+.nav li a:after {
+    display: inline-block;
+    content: " .......................................................";
+    color: rgba(255,255,255,0.2);
+    margin-left: 5px;
+}
+.nav .nav-current:before {
+    color: #fff;
+}
+.nav .nav-current a:after {
+    content: " ";
+    border-bottom: rgba(255,255,255,0.5) 1px solid;
+    width: 100%;
+    height: 1px;
+}
+
+.nav a:link,
+.nav a:visited {
+    color: #B8B8B8;
+}
+
+.nav li.nav-current a,
+.nav a:hover,
+.nav a:active,
+.nav a:focus {
+    color: #fff;
 }
 
 kbd {
@@ -327,6 +485,7 @@ iframe, .fluid-width-video-wrapper {
     margin: 1.6em 0;
 }
 
+
 /* When a video is inside the fitvids wrapper, drop the
 margin on the iframe, cause it breaks stuff. */
 .fluid-width-video-wrapper iframe {
@@ -344,7 +503,87 @@ margin on the iframe, cause it breaks stuff. */
     visibility: hidden;
     display: none;
 }
+.menu-button {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    display: inline-block;
+    float: right;
+    height: 38px;
+    padding: 0 15px;
+    border: #bfc8cd 1px solid;
+    opacity: 1;
+    color: #9EABB3;
+    text-align: center;
+    font-size: 12px;
+    text-transform: uppercase;
+    line-height: 35px;
+    white-space: nowrap;
+    border-radius: 3px;
+    background: rgba(0,0,0,0.1);
+    transition: all 0.5s ease;
+}
+.main-nav a {
+    text-decoration: none;
+    font-family: 'Open Sans', sans-serif;
+}
+.menu-button:focus {
+    outline: 0;
+}
+.menu-button .burger {
+    font-size: 12px;
+    margin-right: 6px;
+}
 
+body.nav-opened .menu-button {
+    padding: 0 12px;
+    background: #111 !important;
+    border-color: #111 !important;
+    color: #fff !important;
+    -webkit-transform: translate3D(94px, 0, 0);
+        -ms-transform: translate3D(94px, 0, 0);
+            transform: translate3D(94px, 0, 0);
+    transition: all 0.3s ease;
+}
+body.nav-opened .menu-button .word {
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+/* Special styles when overlaid on an image*/
+.main-nav.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 70px;
+    border: none;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%,rgba(0,0,0,0) 100%);
+}
+.no-cover .main-nav.overlay,
+.no-cover .menu-button {
+    background: none;
+}
+
+.main-nav.overlay a {
+    color: #fff;
+}
+
+.main-nav.overlay .menu-button {
+    border-color: rgba(255,255,255,0.6);
+}
+
+.main-nav.overlay a:hover {
+    color: #222;
+    border-color: #fff;
+    background: #fff;
+}
+
+/* Add a border to the buttons on hover */
+.menu-button:hover {
+    border-color: #555;
+    color: #555;
+}
 /* Creates a responsive wrapper that makes our content scale nicely */
 .inner {
     position: relative;
@@ -395,9 +634,6 @@ margin on the iframe, cause it breaks stuff. */
     text-align: center;
     text-decoration: none;
     color: rgba(255,255,255,0.7);
-    -webkit-transform: rotate(-90deg);
-    -ms-transform: rotate(-90deg);
-    transform: rotate(-90deg);
     -webkit-animation: bounce 4s 2s infinite;
     animation: bounce 4s 2s infinite;
 }
@@ -407,6 +643,9 @@ margin on the iframe, cause it breaks stuff. */
     color: #fff;
     -webkit-animation: none;
     animation: none;
+}
+.post-template .scroll-down{
+  display: none;
 }
 /* Hide when there's no cover image or on page2+ */
 .no-cover .scroll-down,
@@ -440,19 +679,20 @@ margin on the iframe, cause it breaks stuff. */
 
 .blog-description {
     margin: 0;
-    font-size: 1.8rem;
+    font-size: 2rem;
     line-height: 1.5em;
     font-weight: 300;
-    font-family: 'Noto Serif', serif;
-    letter-spacing: 0;
+    font-family: "Merriweather", serif;
+    letter-spacing: 0.01rem;
     text-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    color:rgba(255,255,255,.8);
 }
 
 /* Every post, on every page, gets this style on its <article> tag */
 .post {
     position: relative;
     width:80%;
-    max-width: 700px;
+    max-width: 900px;
     margin: 4rem auto;
     padding-bottom: 4rem;
     border-bottom: #EBF2F6 1px solid;
@@ -479,9 +719,7 @@ margin on the iframe, cause it breaks stuff. */
     box-shadow: #fff 0 0 0 5px;
 }
 
-.post-title {
-    margin:0;
-}
+
 
 .post-title a {
     text-decoration: none;
@@ -495,7 +733,7 @@ margin on the iframe, cause it breaks stuff. */
 
 .post-meta {
     display: inline-block;
-    margin: 0 0 5px 0;
+    margin: 1.75rem 0 0 0;
     font-family: 'Open Sans', sans-serif;
     font-size: 1.5rem;
     color: #9EABB3;
@@ -562,7 +800,9 @@ margin on the iframe, cause it breaks stuff. */
 #comment h1 a {
     text-decoration: none;
 }
-
+ .post-title {
+  font-size: 3.2rem;
+}
 /* ==========================================================================
    5. Single Post - When you click on an individual post
    ========================================================================== */
@@ -613,7 +853,9 @@ margin on the iframe, cause it breaks stuff. */
 .post-footer .author {
     margin-right: 180px;
 }
-
+.post-footer .author{
+  color: #9EABB3
+}
 /* Drop the share links in the space to the right.
    Doing it like this means it's easier for the author bio
    to be flexible at smaller screen sizes while the share
@@ -694,10 +936,24 @@ figure.highlight pre {
     border: none;
     margin: 0;
 }
-
+.main-nav {
+    position: relative;
+    padding: 35px 40px;
+    margin: 0 0 30px 0;
+}
+.clear-fix{
+  zoom:1
+}
+.main-nav a {
+    text-decoration: none;
+    font-family: 'Open Sans', sans-serif;
+}
 /* Theme: Solarized - Github
  * More theme here: http://softwaremaniacs.org/media/soft/highlight/test.html
  */
+pre{
+  color: #ABB2BF
+}
 pre .comment,
 pre .template_comment,
 .diff pre .header,
@@ -714,21 +970,23 @@ pre .winutils,
 pre .subst,
 pre .request,
 pre .status {
-  color: #333;
+  /*color: #333;*/
+  color:#c678dd;
   font-weight: bold
 }
 
 pre .number,
 pre .hexcolor,
 .ruby pre .constant {
-  color: #099;
+  /*color: #099;*/
+  color:#d19a66
 }
 
 pre .string,
 pre .tag pre .value,
 pre .phpdoc,
 .tex pre .formula {
-  color: #d14
+  color: #98c379
 }
 
 pre .title,
@@ -893,7 +1151,11 @@ pre .chunk {
     text-align: center;
     background: #F7FAFB;
 }
-
+.bloglogo{
+  display: block;
+  margin-top:15px;
+  text-decoration: none;
+}
 .site-footer a {
     color: #BBC7CC;
     text-decoration: underline;
@@ -1002,16 +1264,26 @@ pre .chunk {
     .scroll-down{
       display: none;
     }
+     .post-title {
+      font-size: 3.2rem;
+    }
     blockquote {
         margin-left: 0;
     }
-
-    .site-head {
+    .blog-title{
+      font-size: 4rem;
+    }
+    .blog-description{
+      font-size: 1.8rem;
+      line-height: 1.15em;
+    }
+    .main-header {
         -webkit-box-sizing: border-box;
         -moz-box-sizing: border-box;
         box-sizing: border-box;
-        height: 60vh;
+        height: auto;
         min-height: 240px;
+        height: 60vh;
         padding: 15% 0;
     }
 
@@ -1021,13 +1293,13 @@ pre .chunk {
     }
 
     .blog-description {
-        font-size: 1.7rem;
+        font-size: 1.8rem;
         line-height: 1.5em;
     }
 
     .post {
-        font-size: 0.9em;
-        line-height: 1.6em;
+        font-size: 0.95em;
+
     }
 
     .post-template .post {
@@ -1039,20 +1311,20 @@ pre .chunk {
     }
 
     h1 {
-        font-size: 4.8rem;
+        font-size: 3rem;
         text-indent: -2px;
     }
 
     h2 {
-        font-size: 3.8rem;
+        font-size: 2.5rem;
     }
 
     h3 {
-        font-size: 3.3rem;
+        font-size: 2.0rem;
     }
 
     h4 {
-        font-size: 2.8rem;
+        font-size: 1.8rem;
     }
 
 }
@@ -1064,11 +1336,34 @@ pre .chunk {
 
 @media only screen and (max-width: 500px) {
 
+.post-title {
+  font-size: 2.5rem;
+}
+    .blog-title{
+      font-size: 3rem;
+    }
+    .blog-description{
+      font-size: 1.6rem;
+      line-height: 1.5em;
+    }
     .blog-logo img {
         max-height: 80px;
     }
     .scroll-down{
       display: none;
+    }
+    .nav-title {
+        top: 25px;
+
+    }
+
+    .nav-close {
+        position: absolute;
+        top: 18px;
+    }
+
+    .nav ul {
+        padding: 60px 9% 5%;
     }
     .inner,
     .pagination {
@@ -1088,30 +1383,25 @@ pre .chunk {
     .site-head {
         padding: 10% 0;
     }
+    .site-head {
+        margin-bottom: 15px;
+        height: 40vh;
+    }
 
-    .blog-title {
+
+    h1 {
         font-size: 2.5rem;
-        letter-spacing: 1px;
-        font-weight: normal
-    }
-
-    .blog-description {
-        font-size: 1.5rem;
-    }
-
-
-    h1, h2 {
-        font-size: 3rem;
-        line-height: 1.1em;
         letter-spacing: -1px;
     }
-
+  h2{
+    font-size: 2.2rem;
+  }
     h3 {
-        font-size: 2.8rem;
+        font-size: 2.0rem;
     }
 
     h4 {
-        font-size: 2.3rem;
+        font-size: 1.8rem;
     }
 
     .post-template .post-header {
@@ -1120,8 +1410,11 @@ pre .chunk {
 
     .post-meta {
         font-size: 1.3rem;
+        margin-top: 1rem;
     }
-
+  .post-excerpt p{
+    margin:0;
+  }
     .post-footer {
         padding: 4rem 0;
         text-align: center;
@@ -1156,50 +1449,114 @@ pre .chunk {
         margin-top: 6rem;
         font-size: 1.1rem;
     }
+    .main-nav {
+            padding: 5px;
+            margin-bottom: 2rem;
+        }
+    /*menu*/
+    .menu-button {
+        padding: 0 5px;
+        border-radius: 0;
+        border-color: transparent;
+        color: #2e2e2e;
+        background: transparent;
+    }
+    .menu-button:hover {
+        color: #2e2e2e;
+        border-color: transparent;
+        background: none;
+    }
+    body.nav-opened .menu-button {
+        background: none !important;
+        border: transparent !important;
+    }
 
+    .main-nav.overlay a:hover {
+        color: #fff;
+        border-color: transparent;
+        background: transparent;
+    }
+
+    .no-cover .main-nav.overlay {
+        background: none;
+    }
+    .no-cover .main-nav.overlay .menu-button {
+        border: none;
+    }
+
+    .main-nav.overlay .menu-button {
+        border-color: transparent;
+    }
+    .post {
+        width: auto;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+        margin-left: 16px;
+        margin-right: 16px;
+        padding-bottom: 2rem;
+        line-height: 1.65em;
+    }
+
+    .post-date {
+        display: none;
+    }
+
+    .post-template .post-header {
+        margin-bottom: 2rem;
+    }
+
+    .post-template .post-date {
+        display: inline-block;
+    }
+
+    h1,h2,h3,h4,h5,h6{
+      margin: 0 0 0.3em 0
+    }
 }
 /* Used to bounce .scroll-down on home page */
 @-webkit-keyframes bounce {
     0%, 10%, 25%, 40%, 50% {
-        -webkit-transform: translateY(0) rotate(-90deg);
-                transform: translateY(0) rotate(-90deg);
+        -webkit-transform: translateY(0) ;
+                transform: translateY(0) ;
     }
     20% {
-        -webkit-transform: translateY(-10px) rotate(-90deg);
-                transform: translateY(-10px) rotate(-90deg);
+        -webkit-transform: translateY(-10px) ;
+                transform: translateY(-10px) ;
     }
     30% {
-        -webkit-transform: translateY(-5px) rotate(-90deg);
-                transform: translateY(-5px) rotate(-90deg);
+        -webkit-transform: translateY(-5px) ;
+                transform: translateY(-5px) ;
     }
 }
 @keyframes bounce {
     0%, 10%, 25%, 40%, 50% {
-        -webkit-transform: translateY(0) rotate(-90deg);
-                transform: translateY(0) rotate(-90deg);
+        -webkit-transform: translateY(0) ;
+                transform: translateY(0) ;
     }
     20% {
-        -webkit-transform: translateY(-10px) rotate(-90deg);
-                transform: translateY(-10px) rotate(-90deg);
+        -webkit-transform: translateY(-10px) ;
+                transform: translateY(-10px) ;
     }
     30% {
-        -webkit-transform: translateY(-5px) rotate(-90deg);
-                transform: translateY(-5px) rotate(-90deg);
+        -webkit-transform: translateY(-5px) ;
+                transform: translateY(-5px) ;
     }
 }
 /* Apply these base styles to all icons */
+
 @font-face {
-    font-family: "casper-icons";
-    src:url("./casper-icons.eot?v=1");
-    src:url("./casper-icons.eot?v=1#iefix") format("embedded-opentype"),
-        url("./casper-icons.woff?v=1") format("woff"),
-        url("./casper-icons.ttf?v=1") format("truetype"),
-        url("./casper-icons.svg?v=1#icons") format("svg");
+    font-family: "genericons";
+    src:url("./Genericons.eot?v=1");
+    src:url("./Genericons.eot?v=1#iefix") format("embedded-opentype"),
+        url("./Genericons.woff?v=1") format("woff"),
+        url("./Genericons.ttf?v=1") format("truetype"),
+        url("./Genericons.svg?v=1#icons") format("svg");
     font-weight: normal;
     font-style: normal;
 }
 [class^="icon-"]:before, [class*=" icon-"]:before {
-    font-family: "casper-icons", "Open Sans", sans-serif;
+    /*font-family: "casper-icons", "Open Sans", sans-serif;*/
+    font-family: "genericons", "Open Sans", "sans-serif";
     speak: none;
     font-style: normal;
     font-weight: normal;
@@ -1230,7 +1587,7 @@ pre .chunk {
     content: "\f604";
 }
 .icon-arrow-left:before {
-    content: "\f605";
+    content: "\f431";
 }
 .icon-stats:before {
     content: "\f606";
@@ -1245,7 +1602,9 @@ pre .chunk {
 .icon-menu:before {
     content: "\f609";
 }
-
+.icon-github:before {
+    content: "\f200";
+}
 /* ==========================================================================
    End of file. Media queries should be the last thing here. Do not add stuff
    below this point, or it will probably fuck everything up.

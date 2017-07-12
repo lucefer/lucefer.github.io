@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
   <title>你真的了解javascript中的字符吗？ | lucefer</title>
-  <meta name="description" content="do your best" />
+  <meta name="description" content="details is the key to success" />
   <meta name="HandheldFriendly" content="True" />
   <meta name="MobileOptimized" content="320" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -23,18 +23,49 @@
 </head>
 
 
-<body class="post-template">
+<body class="post-template nav-closed">
 
+<nav class="nav">
+  <h3 class="nav-title">Menu</h3>
+  <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item menu-item-/">
+          <a href="/" rel="section">
+首页
+          </a>
+        </li>
+      
+        <li class="menu-item menu-item-/archives">
+          <a href="/archives" rel="section">
+归档
+          </a>
+        </li>
+      
+    </ul>
+  
+
+</nav>
+<span class="nav-cover"></span>
+
+  <div class="site-wrapper">
   <header class="site-head"  style="background-image: url(
     //ifanqi.me/img/header-bg.jpg)"
         >
+        <nav class="main-nav overlay clearfix"><a class="menu-button" href="#"><span class="burger">☰</span><span class="word">Menu</span></a></nav>
             <div class="vertical">
                 <div class="site-head-content inner">
                      <a class="blog-logo" href="/"><img src="//ifanqi.me/img/photo.jpeg" alt="Blog Logo"/></a>
                         
                             <h1 class="blog-title">lucefer</h1>
-                            <h2 class="blog-description">do your best</h2>
+                            <h2 class="blog-description">details is the key to success</h2>
                 </div>
+                <a class="bloglogo" href="https://github.com/lucefer" target="_blank">
+    <span class="icon-github" style="color:white;font-size:2em"></span>
+    </a>
             </div>
             <a class="scroll-down icon-arrow-left" href="#content"><span class="hidden">Scroll Down</span></a>
 </header>
@@ -43,22 +74,23 @@
 
 <main class="content"  role="main">
   <article class="post">
+
+    <h1 class="post-title">你真的了解javascript中的字符吗？</h1>
     <span class="post-meta">
       <time datetime="2017-07-09T14:42:13.000Z" itemprop="datePublished">
           2017-07-09
       </time>
     
 </span>
-    <h1 class="post-title">你真的了解javascript中的字符吗？</h1>
     <section class="post-content">
       <h2 id="十六进制"><a href="#十六进制" class="headerlink" title="十六进制"></a>十六进制</h2><h2 id="unicode字符"><a href="#unicode字符" class="headerlink" title="unicode字符"></a>unicode字符</h2><h2 id="ascii字符"><a href="#ascii字符" class="headerlink" title="ascii字符"></a>ascii字符</h2><h2 id="数字"><a href="#数字" class="headerlink" title="数字"></a>数字</h2><h2 id="字母"><a href="#字母" class="headerlink" title="字母"></a>字母</h2><h2 id="符号"><a href="#符号" class="headerlink" title="符号"></a>符号</h2>
     </section>
     <footer class="post-footer">
       <section class="author">
     <h4>fanqi</h4>
-    <p>a frontend developer, desktop developer</p>
+    <p>a frontend developer,</p>
 </section>
-      <section class="share">
+      <!--<section class="share">
     <h4>Share this post</h4>
     <a class="icon-twitter" href="http://twitter.com/share?url=http://yoursite.com/2017/07/09/javascript-string/"
        onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
@@ -72,7 +104,7 @@
        onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
         <span class="hidden">Google+</span>
     </a>
-</section>
+</section>-->
     </footer>
   </article>
   <nav class="pagination" role="pagination">
@@ -84,15 +116,19 @@
     <span class="page-number">•</span>
     
     <a class="older-posts" href="/2017/07/03/how-to-write-compiler/">
-        从零开始实现一个新语法 →
+        如何实现一个简易编译器 →
     </a>
     
 </nav>
-  <!--<div id="comment" class="comments-area">
+  <div id="comment" class="comments-area">
     <h1 class="title"><a href="#disqus_comments" name="disqus_comments">Comments</a></h1>
 
     
-</div>-->
+    <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    </div>
+    
+</div>
 </main>
 
 
@@ -100,7 +136,7 @@
 <footer class="site-footer">
   
   <div class="inner">
-     <section class="copyright">All content copyright <a href="/">lucefer</a> &copy; 2014 &bull; All rights reserved.</section>
+     <section class="copyright">All content copyright <a href="/">lucefer</a><br/> &copy; 2014 &bull; All rights reserved.</section>
   </div>
 </footer>
 
@@ -111,8 +147,21 @@
 
 
 
+<script type="text/javascript">
+    var disqus_shortname = 'ifanqi';
+
+    (function(){
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
 
 
 
+
+</div>
 </body>
 </html>
