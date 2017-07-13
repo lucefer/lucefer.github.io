@@ -83,13 +83,9 @@
     
 </span>
     <section class="post-content">
-      <p>本篇文章的内容是设计一个新语法，并实现能够解析该语法的编译器，将新语法编译成javascript的标准语法，使之能够正常运行在生产环境中。为了便于理解，我不打算重新定义一整套语法，而是在js的基础上，设计一个新的语法，并实现能够解析该语法的编译器。</p>
-<p>读完这篇文章，再结合自身的实践，大家就可以DIY新语法了，如果有恒心，甚至可以DIY一套新语言。</p>
+      <p>本篇文章的内容是设计一个新语法，并实现能够解析该语法的编译器，将新语法编译成javascript的标准语法，使之能够正常运行在生产环境中。读完这篇文章，再结合自身的实践，大家就能知道该如何写一个小型编译器了。</p>
 <p>OK，总结一下接下来要做的事情：</p>
-<ol>
-<li>设计语法</li>
-<li>实现编译器</li>
-</ol>
+<p><strong> 1. 设计语法</strong><br><strong> 2. 实现编译器</strong></p>
 <h3 id="语法设计"><a href="#语法设计" class="headerlink" title="语法设计"></a>语法设计</h3><p>我们做的第一件事就是设计我们的语法规范,由于我们的新语法是在javascript的规范上进行的扩充，所以，有些语法我们要沿用ECMA的规范。<br>在设计我们的新语法之前，先来看下面这段代码。<br><figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="keyword">var</span> a, b, c = <span class="number">5</span></div><div class="line">a = b = c</div></pre></td></tr></table></figure></p>
 <p>显而易见，这段代码的作用是定义三个变量，并为它们赋初始值为5。<br>但我觉得上面的写法啰嗦，我想像下面这样书写代码，并实现同样的赋值操作。<br><figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="keyword">var</span> a b c = <span class="number">5</span></div></pre></td></tr></table></figure></p>
 <p>简洁吗？不够简洁？<br>OK，我们再看下面两段代码，这次我们不再随意以<em>a</em>,<em>b</em>,<em>c</em>的方式命名变量，而是将变量命名<strong>语义化</strong>。<br><figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="comment">// javascript语法</span></div><div class="line"><span class="keyword">var</span> baseSalary, graduateSalary, doctorSalary = <span class="number">1000</span></div><div class="line">baseSalary = graduateSalary = doctorSalary</div><div class="line"><span class="comment">// 新语法</span></div><div class="line"><span class="keyword">var</span> baseSalary graduateSalary doctorSalary = <span class="number">1000</span></div></pre></td></tr></table></figure></p>
@@ -106,15 +102,25 @@
 <p><img src="/img/flow.png" alt=""></p>
 <p>在这篇文章中，源代码就是我们前面设计的qi语法，目标代码是javascript标准代码。</p>
 <h4 id="如何下手"><a href="#如何下手" class="headerlink" title="如何下手"></a>如何下手</h4><p>OK，我们接下来要实现一个能够将qi语法翻译为javascript语法的程序，但，从何处着手编码呢？在实际编码之前，我们再花点时间了解一下编译器的内部构造与工作原理，我们可以把编译器看成一个黑盒，从一端输入源代码，另一端输出目标代码。</p>
-<p>首先源代码经过词法分析器（tokenizer）分析，输出线性结构的token单词流，然后这些token经过语法分析器（parser）分析，输出符合qi语法规范的抽象语法树AST，将AST传入AST转换器（transformer）输出符合javascript规范的抽象语法树AST，最后，将生成的符合javascript规范的AST传入代码生成器（generator）构造目标代码。至此，整个编译流程就结束了。具体流程如下图所示。</p>
+<blockquote>
+<p>一个完整的编译器包含如下过程<br>1.词法分析<br>2.语法分析<br>3.语义分析<br>4.生成中间代码<br>5.编译优化<br>6.生成目标代码<br>为了便于理解，本文所讲的编译器不包含4（生成中间代码）和5（编译优化）的步骤。</p>
+</blockquote>
+<ul>
+<li>首先源代码经过词法分析器（tokenizer）分析，输出线性结构的token单词流。</li>
+<li>token经过语法分析器（parser）分析，输出符合qi语法规范的抽象语法树AST</li>
+<li>将AST传入AST转换器（transformer）输出符合javascript规范的抽象语法树AST，</li>
+<li>将生成的符合javascript规范的AST传入代码生成器（generator）构造目标代码。</li>
+</ul>
+<p>至此，整个编译流程就结束了。具体流程如下图所示。</p>
 <p><img src="/img/compile.png" alt=""></p>
 <p>为了简单起见，我们用下面这段代码作为贯穿全文的示例代码进行分析。<br><figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="comment">// qi语法</span></div><div class="line"><span class="keyword">var</span> a b c = <span class="number">100</span></div></pre></td></tr></table></figure></p>
 <p>我们要实现的编译器，要能够把上面这段代码，翻译为下面这段代码。<br><figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="comment">// javascript语法</span></div><div class="line"><span class="keyword">var</span> a, b, c = <span class="number">100</span></div><div class="line">a = b = c</div></pre></td></tr></table></figure></p>
 <p>另外，我们还需要明确的是，我们设计的qi语法的规则都是要遵循javascript规范的，比如词法规范，语法规范，我们只是在javascript现有语法的基础上衍生一种新的语法而已。明确这一点，我们后面的词法规范就容易理解了。</p>
 <h4 id="词法分析"><a href="#词法分析" class="headerlink" title="词法分析"></a>词法分析</h4><p>编译器的第一个阶段就是词法分析，词法分析的作用是将源代码翻译成token集合。源代码其实就是字符序列，字符序列本身粒度太小，直接拿来语法分析，复杂度较高。所以我们先分割出一个词法分析器，将字符序列转换成一系列的单词集合，便于后续步骤的执行。<br>拿上面的源代码来说，如果以字符为粒度进行分析，其形式如下：<br><figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line">[<span class="string">'v'</span>, <span class="string">'a'</span>, <span class="string">'r'</span>, <span class="string">'\n'</span>, <span class="string">'a'</span>, <span class="string">','</span> ,<span class="string">'b'</span>, <span class="string">'c'</span>, <span class="string">'='</span>, <span class="string">'1'</span>, <span class="string">'0'</span>, <span class="string">'0'</span>]</div></pre></td></tr></table></figure></p>
-<p>这种结构我们很难提取出有价值的信息，而我们的词法分析器，则是将上面这种结构，变成下面的结构<br><figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line">[<span class="string">'var'</span>,<span class="string">'a'</span>,<span class="string">'b'</span>,<span class="string">'c'</span>,<span class="string">'='</span>,<span class="string">'100'</span>]</div></pre></td></tr></table></figure></p>
-<p>可读性是不是更好了？这种结构，我们甚至能够读出这段代码的意思。</p>
-<p>词法分析器除了将单词切割出来，还能够将单词进行归类。比如javascript词法规范中包含<em>关键字，保留字，操作符，字符串，数字，null，undefined，变量</em>等诸多单词类型。<br>上面这段代码经过词法分析器，得到的结果应该是下面这种结构。</p>
+<p>这种结构我们很难提取出有价值的信息，而我们的词法分析器，则是将上面的字符序列，变成下面的单词序列。<br><figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line">[<span class="string">'var'</span>,<span class="string">'a'</span>,<span class="string">'b'</span>,<span class="string">'c'</span>,<span class="string">'='</span>,<span class="string">'100'</span>]</div></pre></td></tr></table></figure></p>
+<p>可读性有了很大的改变，我们甚至能够很容易地读出这段代码的意思。</p>
+<p>词法分析器除了将单词切割出来，还需要将单词进行归类。比如javascript词法规范中包含<em>关键字、保留字、操作符、字面量（字符串，数字，null，undefined等）、变量标识符</em>等诸多单词类型。<br>上面这段代码经过词法分析器，得到的结果应该是下面这种结构。</p>
+<p><img src="/img/token-type.png" alt=""></p>
 <h4 id="语法分析"><a href="#语法分析" class="headerlink" title="语法分析"></a>语法分析</h4><p>通过词法分析，我们拿到了源代码中的所有token，接下来开始语法分析。<br>语法分析阶段主要做两件事：<br>1.语义分析<br>2.生成抽象语法树（AST）</p>
 <h4 id="转换抽象语法树"><a href="#转换抽象语法树" class="headerlink" title="转换抽象语法树"></a>转换抽象语法树</h4><p>我们拿到定义的语法的AST之后，就要转换成javascript标准的AST</p>
 <h4 id="目标代码生成"><a href="#目标代码生成" class="headerlink" title="目标代码生成"></a>目标代码生成</h4><p>拿到了javascript标准的AST之后，我们就可以遍历它生成目标代码了。</p>
@@ -175,7 +181,7 @@
   </div>
 </footer>
 
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+  <script src="/js/jquery.min.js"></script>
 
 <script type="text/javascript" src="/js/jquery.fitvids.js"></script>
 <script type="text/javascript" src="/js/index.js"></script>
@@ -193,7 +199,6 @@
         (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-
 
 
 

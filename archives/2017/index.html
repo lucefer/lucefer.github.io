@@ -281,14 +281,10 @@
     <section class="post-excerpt">
       <p>
       
-        本篇文章的内容是设计一个新语法，并实现能够解析该语法的编译器，将新语法编译成javascript的标准语法，使之能够正常运行在生产环境中。为了便于理解，我不打算重新定义一整套语法，而是在js的基础上，设计一个新的语法，并实现能够解析该语法的编译器。
-读完这篇文章，再结合自身的实践，大家就可以DIY新语法了，如果有恒心，甚至可以DIY一套新语言。
+        本篇文章的内容是设计一个新语法，并实现能够解析该语法的编译器，将新语法编译成javascript的标准语法，使之能够正常运行在生产环境中。读完这篇文章，再结合自身的实践，大家就能知道该如何写一个小型编译器了。
 OK，总结一下接下来要做的事情：
-
-设计语法
-实现编译器
-
-语法设计我们做的第一件事就是设计
+ 1. 设计语法 2. 实现编译器
+语法设计我们做的第一件事就是设计我们的语法规范,由于我们的新语法是在javascript的规范上进行的扩充，所以，有些语法我们要沿用ECMA的规范。在设计我们的
       
       </p>
       
@@ -347,7 +343,7 @@ Quick StartCreate a new p
   </div>
 </footer>
 
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+  <script src="/js/jquery.min.js"></script>
 
 <script type="text/javascript" src="/js/jquery.fitvids.js"></script>
 <script type="text/javascript" src="/js/index.js"></script>
@@ -365,7 +361,6 @@ Quick StartCreate a new p
         (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
-
 
 
 
