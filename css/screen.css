@@ -186,10 +186,12 @@ h6 {
 a {
     color: #4a4a4a;
     transition: color ease 0.3s;
+    text-decoration: none;
 }
 
-a:hover {
+a,a:hover {
     color: #57A3E8;
+
 }
 
 h1 a, h2 a, h3 a,
@@ -197,7 +199,9 @@ h4 a, h5 a, h6 a {
     color: #50585D;
 }
 
-
+.site-head h1 a, .site-head h1 a:hover{
+    color: #FFF;  
+}
 p, ul, ol, dl {
     margin: 1em 0;
 }
