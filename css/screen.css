@@ -193,14 +193,16 @@ a,a:hover {
     color: #57A3E8;
 
 }
+.post-title a{
 
+}
 h1 a, h2 a, h3 a,
 h4 a, h5 a, h6 a {
     color: #50585D;
 }
 
 .site-head h1 a, .site-head h1 a:hover{
-    color: #FFF;  
+    color: #FFF;
 }
 p, ul, ol, dl {
     margin: 1em 0;
@@ -696,8 +698,8 @@ body.nav-opened .menu-button .word {
 /* Every post, on every page, gets this style on its <article> tag */
 .post {
     position: relative;
-    width:80%;
-    max-width: 900px;
+    width:90%;
+    max-width: 1000px;
     margin: 4rem auto;
     padding-bottom: 4rem;
     border-bottom: #EBF2F6 1px solid;
@@ -1306,7 +1308,9 @@ pre .chunk {
         font-size: 0.95em;
 
     }
-
+    .site-head{
+      height: 60vh;
+    }
     .post-template .post {
         padding-bottom: 1rem;
     }

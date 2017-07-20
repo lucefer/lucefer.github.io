@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+  <title>文本截断，知多少 | lucefer</title>
+  <meta name="description" content="details is the key to success" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" type="text/css" href="/css/screen.css" />
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Noto+Serif:400,700,400italic|Open+Sans:700,400" />
+
+  <meta name="generator" content="lucefer">
+
+  
+  
+  
+
+  
+</head>
+
+
+<body class="post-template nav-closed">
+
+<nav class="nav">
+  <h3 class="nav-title">Menu</h3>
+  <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item menu-item-/">
+          <a href="/" rel="section">
+首页
+          </a>
+        </li>
+      
+        <li class="menu-item menu-item-/archives">
+          <a href="/archives" rel="section">
+归档
+          </a>
+        </li>
+      
+    </ul>
+  
+
+</nav>
+<span class="nav-cover"></span>
+
+  <div class="site-wrapper">
+  <header class="site-head"  style="background-image: url(
+    //ifanqi.me/img/header-bg.jpg)"
+        >
+        <nav class="main-nav overlay clearfix"><a class="menu-button" href="#"><span class="burger">☰</span><span class="word">Menu</span></a></nav>
+            <div class="vertical">
+                <div class="site-head-content inner">
+                    
+                            <h1 class="blog-title"><a href="/">lucefer</a></h1>
+                            <h2 class="blog-description">details is the key to success</h2>
+                </div>
+                <a class="bloglogo" href="https://github.com/lucefer" target="_blank">
+    <span class="icon-github" style="color:white;font-size:2em"></span>
+    </a>
+            </div>
+            <a class="scroll-down icon-arrow-left" href="#content"><span class="hidden">Scroll Down</span></a>
+</header>
+
+  
+
+<main class="content"  role="main">
+  <article class="post">
+
+    <h1 class="post-title">文本截断，知多少</h1>
+    <span class="post-meta">
+      <time datetime="2017-07-17T06:31:33.000Z" itemprop="datePublished">
+          2017-07-17
+      </time>
+    
+</span>
+    <section class="post-content">
+      
+
+      <p>文本截断是我们前端经常会碰到的需求，有些文本比较长，设计师往往会在有限的空间内限制字符数量，以确保界面的美观性，而且会在一些字符后面加上省略号来表示截断，这个时候我们往往会使用css3的<strong>text-overflow:ellipisis</strong>来解决，单行文本截断没什么问题，多行文本我们也可以借助webkit的私有属性<strong>-webkit-line-clamp</strong>来解决。但是这是一个不规范的属性，并没有出现在CSS规范草案中，所以只能在webkit内核的浏览器下使用。今天介绍一下如何使用javascript来实现文本截断，并附上一个基于vue的文本截断组件<a href="https://github.com/lucefer/ellipsis-plus" target="_blank" rel="external">ellipisis-plus</a></p>
+<h4 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h4><p>相信大家很容易就会想到如何实现，就是计算、计算、计算。不过我还是先把原理啰嗦出来，以免有些童鞋一时想不到。<br>简单来说，文本截断的实现就是依赖一个简单的数学公式。<strong>Y*L=n*X+D</strong></p>
+<ul>
+<li><p>Y代表容器宽度。✅</p>
+<blockquote>
+<p>容器宽度很容易计算出来，用offsetWidth。</p>
+</blockquote>
+</li>
+<li><p>L代表显示行数。✅</p>
+<blockquote>
+<p>显示行数因为是我们指定的值，所以也是已知量。</p>
+</blockquote>
+</li>
+<li><p>n代表字符个数。❓</p>
+<blockquote>
+<p>待求。</p>
+</blockquote>
+</li>
+<li><p>X代表字符宽度。❌</p>
+<blockquote>
+<p>字符宽度，这个就不太统一了，为什么呢？首先，假定我们<em> 字体大小</em>、<em>字体类型</em> 设置统一的情况下，浏览器对英文字母、数字、特殊符号、汉字等渲染的宽度都是不同的。即使英文字母，不同字母的宽度也是不尽相同的。所以，字符宽度我们无法确定。   </p>
+</blockquote>
+</li>
+<li><p>D代表省略号占位符的宽度。✅</p>
+<blockquote>
+<p>可以利用offsetWidth计算得知。    </p>
+</blockquote>
+</li>
+</ul>
+<p>我们要求解的是字符个数n，所以，<em>容器宽度、字符宽度、显示行数、省略号占位符宽度</em> 这四个参数必须是确定的。千言万语抵不过一张图。</p>
+<p><img src="/img/text-overflow.png" alt=""></p>
+<p>因为字符宽度X不确定，所以单纯依赖这个公式，我们无法计算出字符个数。你也许会说了，前面你不是已经说依赖这个数学公式吗？现在又说这个公式无法计算出字符个数，这不自相矛盾吗？</p>
+<p>是的，没错。单单依靠这个公式是无法达到我们的目的，但是我们如果想达到截断的目的，还是需要这个公式来支撑的。也就是说，这个公式是实现文本截断的一个必要条件，我们还需要其他手段，并结合这个数学公式来实现。</p>
+<p>好吧，重新整理一下我们的思路。为了达到文本截断的目的，我们需要找到一个<strong>临界字符</strong>，这个字符能够刚好显示在指定行的末尾。</p>
+<blockquote>
+<p>临界字符是这样的一个字符，紧跟它的字符一旦添加到容器中，容器就会另起一行显示。</p>
+</blockquote>
+<p>那么问题来了，如何找到这个临界字符呢？聪明的你也许已经想到了，我们可以一个一个的添加字符，每添加一个字符就检查一下容器的高度是否超过指定行的高度，如下动图。</p>
+<p><img src="/img/jieduan.gif" alt=""></p>
+<p>我们一个个的往容器中添加字符，每添加一个，就检查一下容器的高度是否超过指定行的高度。如果刚好超过，那么当前字符就是我们的临界字符，这个方案没问题，妥妥哒，<a href="http://ifanqi.me/ellipsis-plus/demo/dist/index.html#/ellipsisDemo" target="_blank" rel="external">演示地址</a>。接下来，我们看下这个方案中的细节。</p>
+<h4 id="细节"><a href="#细节" class="headerlink" title="细节"></a>细节</h4><p>上述方案大方向没问题，但是有些细节要注意。</p>
+<p><strong>1. 性能 </strong></p>
+<p>首当其冲的是性能问题，我们不难想到，在我们每次添加一个字符的时候，都要重新计算容器高度，而容器高度是通过<strong>offsetHeight</strong>计算得来的，我们都知道offsetHeight一旦调用，就会强制浏览器重排（reflow），次数多了，自然会影响性能。所以我们要做点小优化。什么优化呢？我们的公式<strong>Y*L=n*X+D</strong>派上用场了。</p>
+<ul>
+<li>我们可以假定所有字符都是中文字符，计算单个中文字符的宽度缓存起来，然后通过这个公式计算一个估值L,我们截取前L个字符，放到容器中。</li>
+<li>判断当前容器高度是否大于指定高度。<ul>
+<li>如果大于指定高度，说明我们的L值取大了，需要往少了减少字符去探测。</li>
+<li>如果小于指定高度，说明我们的L值取小了，需要往多了增加字符去探测。</li>
+</ul>
+</li>
+</ul>
+<p>通过这个手段，我们可以大大降低浏览器的重排引起的性能问题。</p>
+<p><strong>2. 字符宽度的计算</strong></p>
+<p>再说下字符宽度，字符宽度并不是和字体大小等大的，字符宽度除了和语言符号有关，还和样式有关，比如font-size，letter-spacing等。所以我们在计算的时候，要将单个字符放到一个内联容器中，通过容器的offsetWidth来计算。即便我们通过offsetWidth来计算，也仍然要注意以下两点：</p>
+<ul>
+<li>首先字符的宽度不一定都是整数，也有可能是浮点数，比如英文字母，特殊符号等。</li>
+<li>其次<strong>offsetWidth</strong>会根据字符宽度<strong>四舍五入来取整</strong>，所以导致我们计算出来的<strong>实际宽度</strong>不准，这个时候我们必须向上取整，以保证字符总宽度小于等于容器宽度和行数的乘积。否则，我们的临界字符会取的不准。</li>
+</ul>
+<p><strong>3. 容器宽度的计算</strong><br>如第二条所说，offsetWidth会根据宽度四舍五入来取整，所以我们的容器宽度也未必是准的，这个时候，我们要对容器宽度向下取整，目的也是为了让字符总宽度小于等于容器宽度和行数的乘积。</p>
+<blockquote>
+<p>也许你会说我们可以用getComputedStyle来计算宽度，很不幸的告诉你，通过这种方式计算出的容器宽度并不总是数值，也有可能是”auto”。</p>
+</blockquote>
+<p><strong>4. 容器每行字符所占高度的计算</strong><br>容器每行字符所占高度与font-family、font-size、line-height有关，如下图所示，不同的字体，同时设置100px字体大小，line-height设置为1，字符所占空间的高度是不同的，更深层次的原因<a href="https://zhuanlan.zhihu.com/p/25808995?group_id=825729887779307520" target="_blank" rel="external">请戳这里</a></p>
+<p><img src="/img/font.png" alt=""></p>
+<p>所以我们无法通过这三个要素来精确计算容器每行字符的高度。但有一个取巧的手段：为容器添加一个字符，计算容器的offsetHeight得出行高。</p>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>由文本截断我们可以总结一些知识点：</p>
+<p><strong>1. offsetWidth获取的数值不可靠。</strong></p>
+<p><strong>2. 字符所占空间的宽度、高度和字体、字号、行高等综合影响有关。</strong></p>
+<p><strong>3. getComputedStyle计算出的宽度、行高并不总是数值。</strong></p>
+<h4 id="源码"><a href="#源码" class="headerlink" title="源码"></a>源码</h4><p>说了这么多理论的东西，也是时候来点源码了，我就不贴了，具体请<a href="https://github.com/lucefer/ellipsis-plus" target="_blank" rel="external">戳这里</a>。查看演示请<a href="http://ifanqi.me/ellipsis-plus/demo/dist/index.html#/ellipsis" target="_blank" rel="external">戳这里</a></p>
+
+    </section>
+    <footer class="post-footer">
+      <section class="author">
+    <h4>fanqi</h4>
+    <p>a frontend developer</p>
+</section>
+      <!--<section class="share">
+    <h4>Share this post</h4>
+    <a class="icon-twitter" href="http://twitter.com/share?url=http://yoursite.com/2017/07/17/js-ellipsis/"
+       onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+        <span class="hidden">Twitter</span>
+    </a>
+    <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http://yoursite.com/2017/07/17/js-ellipsis/"
+       onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+        <span class="hidden">Facebook</span>
+    </a>
+    <a class="icon-google-plus" href="https://plus.google.com/share?url=http://yoursite.com/2017/07/17/js-ellipsis/"
+       onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+        <span class="hidden">Google+</span>
+    </a>
+</section>-->
+    </footer>
+  </article>
+  <nav class="pagination" role="pagination">
+    
+    <span class="page-number">•</span>
+    
+    <a class="older-posts" href="/2017/07/03/how-to-write-compiler/">
+        如何实现一个简易编译器
+    </a>
+    
+</nav>
+
+  <!--<div id="comment" class="comments-area">
+    <h1 class="title"><a href="#disqus_comments" name="disqus_comments">Comments</a></h1>
+
+    
+</div>-->
+</main>
+
+
+  
+<footer class="site-footer">
+  
+  <div class="inner">
+     <section class="copyright">All content copyright <a href="/">lucefer</a><br/> &copy; 2014 &bull; All rights reserved.</section>
+  </div>
+</footer>
+
+  <script src="/js/jquery.min.js"></script>
+
+<script type="text/javascript" src="/js/jquery.fitvids.js"></script>
+<script type="text/javascript" src="/js/index.js"></script>
+
+
+
+  <script type="text/javascript" src="http://tajs.qq.com/stats?sId=63051648" charset="UTF-8"></script>
+
+
+
+
+</div>
+</body>
+</html>
