@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+  <title>浏览器是怎么看闭包的。 | lucefer</title>
+  <meta name="description" content="details is the key to success" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" type="text/css" href="/css/screen.css" />
+  <!--<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Noto+Serif:400,700,400italic|Open+Sans:700,400" />
+-->
+  <meta name="generator" content="lucefer">
+
+  
+  
+  
+
+  
+</head>
+
+
+<body class="post-template nav-closed">
+
+<nav class="nav">
+  <h3 class="nav-title">Menu</h3>
+  <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item menu-item-/">
+          <a href="/" rel="section">
+首页
+          </a>
+        </li>
+      
+        <li class="menu-item menu-item-/archives">
+          <a href="/archives" rel="section">
+归档
+          </a>
+        </li>
+      
+    </ul>
+  
+
+</nav>
+<span class="nav-cover"></span>
+
+  <div class="site-wrapper">
+  <header class="site-head"  style="background-image: url(
+    //ifanqi.me/img/header-bg.jpg)"
+        >
+        <nav class="main-nav overlay clearfix"><a class="menu-button" href="#"><span class="burger">☰</span><span class="word">Menu</span></a></nav>
+            <div class="vertical">
+                <div class="site-head-content inner">
+                    
+                            <h1 class="blog-title"><a href="/">lucefer</a></h1>
+                            <h2 class="blog-description">details is the key to success</h2>
+                </div>
+                <a class="bloglogo" href="https://github.com/lucefer" target="_blank">
+    <span class="icon-github" style="color:white;font-size:2em"></span>
+    </a>
+            </div>
+            <a class="scroll-down icon-arrow-left" href="#content"><span class="hidden">Scroll Down</span></a>
+</header>
+
+  
+
+<main class="content"  role="main">
+  <article class="post">
+
+    <h1 class="post-title">浏览器是怎么看闭包的。</h1>
+    <span class="post-meta">
+      <time datetime="2017-07-25T09:36:54.000Z" itemprop="datePublished">
+          2017-07-25
+      </time>
+    
+</span>
+    <section class="post-content">
+      
+
+      <p>闭包，是javascript的一大理解难点，网上关于闭包的文章也很多，但是很少有能让人看了就彻底明白的文章。究其原因，我想是因为闭包涉及了一连串的知识点。只有把这一连串的知识点都理解透彻，实现一个概念的闭环，才可以真正理解它。今天打算换个角度来理解闭包，从内存分配与回收的角度阐述，希望能帮助你真正消化掉所看到的闭包知识，同时也希望本文是你看的最后一篇关于闭包的文章。</p>
+<h4 id="闭包简介"><a href="#闭包简介" class="headerlink" title="闭包简介"></a>闭包简介</h4><p>函数嵌套函数时，内层函数引用了外层函数作用域下的变量，并且内层函数被全局环境下的变量引用，就形成了闭包。</p>
+<blockquote>
+<p>闭包实质上是函数作用域的副产物。</p>
+</blockquote>
+<p>关于闭包我们需要特别重视的一点是<strong>函数内部定义的所有函数共享同一个闭包对象</strong>。<br>什么意思呢？看如下代码：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="keyword">var</span> a</div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">b</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> c = <span class="string">'1'</span></div><div class="line">  <span class="keyword">var</span> d = <span class="string">'2'</span></div><div class="line">  <span class="function"><span class="keyword">function</span> <span class="title">e</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(c)</div><div class="line">  &#125;</div><div class="line">  <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log（d)</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">return</span> f</div><div class="line">&#125;</div><div class="line">a = b()</div></pre></td></tr></table></figure>
+<blockquote>
+<p>上面代码中f引用了变量d，同时f被外部变量a引用，所以形成闭包，导致变量d滞留在内存中。我们思考一下，那么变量c呢？好像我们并没有用到c，应该不会滞留在内存中吧。然后事实是c也会滞留在内存中。如上代码形成的闭包包含两个成员，c和d。这种现象成为函数内闭包共享。</p>
+</blockquote>
+<p>为什么说需要特别重视这个特性呢？因为这个特性，如果我们不仔细的话，很容易写出导致内存泄漏的代码。</p>
+<p>关于闭包的概念性的东西，我就讲这么多了，但是如果真正理解好闭包，还是需要搞明白几个知识点</p>
+<ul>
+<li>函数作用域链</li>
+<li>执行上下文</li>
+<li>变量对象、活动对象</li>
+</ul>
+<p>这些内容大家可以谷歌百度之，大概理解一下。接下来我会讲如何从浏览器的视角来理解闭包，所以不做过多讲解。</p>
+<h4 id="如何判别内存垃圾"><a href="#如何判别内存垃圾" class="headerlink" title="如何判别内存垃圾"></a>如何判别内存垃圾</h4><p>现代浏览器的垃圾回收过程比较复杂，详细过程大家可以自行google之。这里我只讲如何判定内存垃圾。大体上可以这么理解，从根对象开始寻找，只要能顺着引用找到的，都不能被回收。顺着引用找不到的对象被视为垃圾，在下一个垃圾回收节点被回收。寻找垃圾，可以理解为顺藤摸瓜的过程。</p>
+<h4 id="闭包的内存表示"><a href="#闭包的内存表示" class="headerlink" title="闭包的内存表示"></a>闭包的内存表示</h4><p>从最简单的代码入手，我们看下全局变量定义。<br><figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="keyword">var</span> a = <span class="string">'小歌'</span></div></pre></td></tr></table></figure></p>
+<p>这样一段代码，在内存里表示如下</p>
+<p><img src="/img/closure/nc1.png" alt=""></p>
+<blockquote>
+<p>在全局环境下，定义了一个变量a，并给a赋值了一个字符串，箭头表示引用。</p>
+</blockquote>
+<p>我们再定义一个函数：<br><figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="keyword">var</span> a = <span class="string">'小歌'</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">teach</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> b = <span class="string">'小谷'</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>内存结构如下：</p>
+<p><img src="/img/closure/nc2.png" alt=""></p>
+<p>&gt;</p>
+<p>一切都很好理解，如果你细心的话，你会发现<strong>函数对象teach</strong>里有一个叫<strong>[[scopes]]</strong>的属性，这是什么东东？函数创建完为什么会有这个属性。很高兴你能问到这一点，也是理解闭包很关键的一点。</p>
+<p>请谨记：<br><strong> 函数一旦创建，javascript引擎会在函数对象上附加一个名叫作用域链的属性，这个属性指向一个数组对象，数组对象包含着函数的作用域以及父作用域，一直到全局作用域</strong></p>
+<p>所以上图可以简单理解为：teach函数是在全局环境下创建的，所以teach的作用域链只有一层，那就是全局作用域global</p>
+<blockquote>
+<p>需要明确的是，浏览器下global指向window对象，nodejs环境global指向global对象</p>
+</blockquote>
+<p>请再次谨记：<br><strong> 函数在执行的时候，会申请空间创建执行上下文，执行上下文会包含函数定义时的作用域链，其次包含函数内部定义的变量、参数等，当函数在当前作用域执行时，会首先查找当前作用域下的变量，如果找不到，就会向函数定义时的作用域链中查找，直到全局作用域，如果变量再全局作用域下也找不到，则会抛出错误。</strong></p>
+<p>我们都知道，函数执行的时候，会创建一个执行上下文，其实就是在申请一块栈结构的内存空间，函数中的局部变量都在这块空间中分配，函数执行完毕，局部变量在下一个垃圾回收节点被回收。OK，我们再次升级一下代码，看一下函数运行时内存的结构。<br><figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="keyword">var</span> a = <span class="string">'小歌'</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">teach</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> b = <span class="string">'小谷'</span></div><div class="line">&#125;</div><div class="line">teach()</div></pre></td></tr></table></figure></p>
+<p>内存表示如下：<br><img src="/img/closure/nc3.png" alt=""></p>
+<p>很明显，我们可以看到，函数在执行过程中仅仅做了一个局部变量的赋值，并未与全局环境下的变量发生关系，所以我们从window对象沿着引用（图中的箭头）寻找的话，是找不到执行上下文中的变量b的。因此函数执行完后，变量b将被回收。</p>
+<p>我们再次升级一下代码：<br><figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="keyword">var</span> a = <span class="string">'小歌'</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">teach</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> b = <span class="string">'小谷'</span></div><div class="line">  <span class="keyword">var</span> say = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(b)</div><div class="line">  &#125;</div><div class="line">  a =  say</div><div class="line">&#125;</div><div class="line">teach()</div></pre></td></tr></table></figure></p>
+<p>内存表示如下：</p>
+<p><img src="/img/closure/nc4.png" alt=""></p>
+<blockquote>
+<p>注：灰色表示的是无法从根对象跟踪到的对象。</p>
+</blockquote>
+<p>函数执行顺序：</p>
+<ol>
+<li>函数teach开始执行前，申请栈空间，上图蓝色方块。</li>
+<li>创建上下文scope（类栈结构），并将teach函数定义时的[[scopes]]压入到scope中。</li>
+<li>初始化变量b（变量提升），创建函数say,初始化say的scopes属性，首先将<strong>函数teach的scopes</strong>压入函数say的<strong>[[scopes]]</strong> 中。由于say引用了变量b，形成闭包closure。所以我们还要将closure对象压入函数say的[[scopes]]。</li>
+<li>创建变量对象local，指向局部变量b和say，并将local压入步骤2的scope中。</li>
+<li>函数开始执行<ol>
+<li>给变量b赋值字符串对象’小谷’。</li>
+<li>将全局变量a指向函数say。</li>
+</ol>
+</li>
+</ol>
+<p>函数执行完毕，正常情况下变量b应该被释放了。但是我们发现，沿着window找下去，是能够找到b的，根据我们前面讲的判定内存垃圾的原理得知，b不是内存垃圾，所以b不能被释放，这就是为什么闭包会让函数内变量保存在内存中的原因。</p>
+<p>再次升级代码，我们看下<strong>闭包共享</strong>的内存表示：<br><figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="keyword">var</span> a = <span class="string">'0'</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">b</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> c = <span class="string">'1'</span></div><div class="line">  <span class="keyword">var</span> d = <span class="string">'2'</span></div><div class="line">  <span class="function"><span class="keyword">function</span> <span class="title">e</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(c)</div><div class="line">  &#125;</div><div class="line">  <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log（d)</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">return</span> f</div><div class="line">&#125;</div><div class="line">a = b()</div></pre></td></tr></table></figure></p>
+<p><img src="/img/closure/nc5.png" alt=""></p>
+<blockquote>
+<p>灰色表示的图形是内存垃圾，将会被垃圾回收器回收。</p>
+</blockquote>
+<p>上图很容易得出，虽然函数f没有用到变量d，但是变量d存在于闭包closure中，从window对象开始寻找能够找到变量d，所以变量d不能释放。</p>
+<p>你也许会问了，这种特性是如何能导致内存泄漏的呢？好吧，思考如下一段代码，比较经典的meteor内存泄漏问题。<br><figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="keyword">var</span> t = <span class="literal">null</span>;</div><div class="line"><span class="keyword">var</span> replaceThing = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> o = t</div><div class="line">    <span class="keyword">var</span> unused = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="keyword">if</span> (o)</div><div class="line">            <span class="built_in">console</span>.log(<span class="string">"hi"</span>)</div><div class="line">    &#125;</div><div class="line">    t = &#123;</div><div class="line">            <span class="attr">longStr</span>: <span class="keyword">new</span> <span class="built_in">Array</span>(<span class="number">1000000</span>).join(<span class="string">'*'</span>),</div><div class="line">            <span class="attr">someMethod</span>: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">              <span class="built_in">console</span>.log(<span class="number">1</span>)</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">&#125;</div><div class="line">setInterval(replaceThing, <span class="number">1000</span>)</div></pre></td></tr></table></figure></p>
+<p>这段代码是有内存泄漏的，在浏览器中执行这段代码，你会发现内存不断上升,虽然gc释放了一些内存，但是仍然有一些内存无法释放，而且是梯度上升的。如下图</p>
+<p><img src="/img/closure/nc6.png" alt=""></p>
+<p>这种曲线说明是有内存泄漏的，我们可以通过开发者工具去分析哪些对象没有被回收掉。事实上我可以告诉大家，没有释放掉的内存其实就是我们每次创建的大对象theThing。我们通过画图的方式来看下：</p>
+<p><img src="/img/closure/nc7.png" alt=""></p>
+<p>上面这张图是假设replaceThing函数执行了三次，你会发现，每次我们给变量t赋予一个大对象的时候，由于<strong>闭包共享</strong>的缘故，之前的大对象仍然能够从window对象跟踪到，所以这些大对象都不能被回收掉。其实真正对我们有用的是最后一次为t赋予的大对象，那么之前的对象则造成了内存泄漏。</p>
+<blockquote>
+<p>可以想象，假如我们没有意识到这一点，任由程序一直运行下去，浏览器很快就会崩溃。</p>
+</blockquote>
+<p>解决这个问题的方式也很简单，每次执行完代码，将变量o置为null即可，大家可以试试看哈~</p>
+<h4 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h4><p>文章到此结束，建议大家看一下自己曾经遇到的闭包例子，采用画图的方式，我想你会很容易的理解它。如果没有，欢迎和我私下沟通。</p>
+
+    </section>
+    <footer class="post-footer">
+      <section class="author">
+    <h4>fanqi</h4>
+    <p>a frontend developer</p>
+</section>
+      <!--<section class="share">
+    <h4>Share this post</h4>
+    <a class="icon-twitter" href="http://twitter.com/share?url=http://yoursite.com/2017/07/25/you-can-understand-closure/"
+       onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+        <span class="hidden">Twitter</span>
+    </a>
+    <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http://yoursite.com/2017/07/25/you-can-understand-closure/"
+       onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+        <span class="hidden">Facebook</span>
+    </a>
+    <a class="icon-google-plus" href="https://plus.google.com/share?url=http://yoursite.com/2017/07/25/you-can-understand-closure/"
+       onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+        <span class="hidden">Google+</span>
+    </a>
+</section>-->
+    </footer>
+  </article>
+  <nav class="pagination" role="pagination">
+    
+    <span class="page-number">•</span>
+    
+    <a class="older-posts" href="/2017/07/17/js-ellipsis/">
+        【文本截断】知多少
+    </a>
+    
+</nav>
+
+  <!--<div id="comment" class="comments-area">
+    <h1 class="title"><a href="#disqus_comments" name="disqus_comments">Comments</a></h1>
+
+    
+</div>-->
+</main>
+
+
+  
+<footer class="site-footer">
+  
+  <div class="inner">
+     <section class="copyright">All content copyright <a href="/">lucefer</a><br/> &copy; 2014 &bull; All rights reserved.</section>
+  </div>
+</footer>
+
+  <script src="/js/jquery.min.js"></script>
+
+<script type="text/javascript" src="/js/jquery.fitvids.js"></script>
+<script type="text/javascript" src="/js/index.js"></script>
+
+
+
+  <script type="text/javascript" src="http://tajs.qq.com/stats?sId=63051648" charset="UTF-8"></script>
+
+
+
+
+</div>
+</body>
+</html>
