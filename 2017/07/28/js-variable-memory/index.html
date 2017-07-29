@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+  <title>可视化分析js的内存分配与回收 | lucefer</title>
+  <meta name="description" content="details is the key to success" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" type="text/css" href="/css/screen.css" />
+  <!--<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Noto+Serif:400,700,400italic|Open+Sans:700,400" />
+-->
+  <meta name="generator" content="lucefer">
+
+  
+  
+  
+
+  
+</head>
+
+
+<body class="post-template nav-closed">
+
+<nav class="nav">
+  <h3 class="nav-title">Menu</h3>
+  <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item menu-item-/">
+          <a href="/" rel="section">
+首页
+          </a>
+        </li>
+      
+        <li class="menu-item menu-item-/archives">
+          <a href="/archives" rel="section">
+归档
+          </a>
+        </li>
+      
+    </ul>
+  
+
+</nav>
+<span class="nav-cover"></span>
+
+  <div class="site-wrapper">
+  <header class="site-head"  style="background-image: url(
+    //ifanqi.me/img/header-bg.jpg)"
+        >
+        <nav class="main-nav overlay clearfix"><a class="menu-button" href="#"><span class="burger">☰</span><span class="word">Menu</span></a></nav>
+            <div class="vertical">
+                <div class="site-head-content inner">
+                    
+                            <h1 class="blog-title"><a href="/">lucefer</a></h1>
+                            <h2 class="blog-description">details is the key to success</h2>
+                </div>
+                <a class="bloglogo" href="https://github.com/lucefer" target="_blank">
+    <span class="icon-github" style="color:white;font-size:2em"></span>
+    </a>
+            </div>
+            <a class="scroll-down icon-arrow-left" href="#content"><span class="hidden">Scroll Down</span></a>
+</header>
+
+  
+
+<main class="content"  role="main">
+  <article class="post">
+
+    <h1 class="post-title">可视化分析js的内存分配与回收</h1>
+    <span class="post-meta">
+      <time datetime="2017-07-28T03:54:46.000Z" itemprop="datePublished">
+          2017-07-28
+      </time>
+    
+</span>
+    <section class="post-content">
+      
+
+      <blockquote>
+<p>之前写了一篇文章<a href="https://juejin.im/post/5979b5755188253df1067397" target="_blank" rel="external">浏览器是怎么看闭包的</a>，发现有些读者对js内存分配与回收懵懵懂懂，理解文章的配图比较费劲，我想主要原因是我的配图省略了一些细节，所以导致大家理解困难。今天专门写一篇关于js内存分配回收的文章，帮助大家理解js代码的内存表示。</p>
+</blockquote>
+<h4 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h4><p>先唠叨些基本知识：</p>
+<ul>
+<li>javascript的数据类型分为基本类型和引用类型（对象）。基本类型分为如下几种：<ul>
+<li>数字字面量</li>
+<li>字符串字面量</li>
+<li>布尔字面量</li>
+<li>undefined</li>
+<li>null</li>
+</ul>
+</li>
+<li>引用类型分为如下几种<ul>
+<li>通过new的方式生成的对象<ul>
+<li>new Object()</li>
+<li>new Array()</li>
+<li>new RegExp()</li>
+<li>new String()</li>
+<li>new Number()</li>
+<li>new Bollean()</li>
+<li>new 自定义对象()</li>
+</ul>
+</li>
+<li>{}，[]，正则字面量。</li>
+</ul>
+</li>
+</ul>
+<h4 id="简单对象的内存表示"><a href="#简单对象的内存表示" class="headerlink" title="简单对象的内存表示"></a>简单对象的内存表示</h4><p>我们都知道的是，javascript中值类型是在变量所在的内存单元中存放的，而对于引用类型的对象，变量所在的内存单元存放的是堆空间中对象的内存地址。我们还应该知道的是，函数在执行时，局部变量是在栈空间中创建，引用对象是在堆空间中创建的。</p>
+<p>我们还是从代码入手：<br><figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="keyword">var</span> a = <span class="string">'abc'</span></div><div class="line"><span class="keyword">var</span> b = <span class="number">123</span></div><div class="line"><span class="keyword">var</span> c = <span class="literal">true</span></div><div class="line"><span class="keyword">var</span> d = <span class="literal">undefined</span></div><div class="line"><span class="keyword">var</span> e = <span class="literal">null</span></div><div class="line"><span class="keyword">var</span> f = &#123;</div><div class="line">  <span class="attr">n</span>: <span class="string">'test'</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这段代码我们定义了六个全局变量，每个变量赋予不同类型的值，我们发现，a、b、c、d、e基本类型的值占据一个内存单元，而变量f内存储的是堆中对象的地址。如下图表示：</p>
+<p><img src="/img/memory/m0.png" alt=""></p>
+<blockquote>
+<p>变量f中存储的0x00012345是堆中对象的内存地址。</p>
+</blockquote>
+<p>一切都很容易理解。细心的同学也许会指出，null也是对象，通过typeof null 表达式得到的结果是’object’。关于这个，我想说的是typeof null = ‘object’ 这个现象是历史遗留bug。事实上null是空值，并不是对象。</p>
+<blockquote>
+<p>js的类型值有1-3位是表示类型，其它位表示真实值。<br>000: object. The data is a reference to an object.<br>也就是说，000开头的被认为是指向对象引用。由于js中的null是空指针，在大多数平台上空指针的前两位是0x00，再加上null的数值表示是0，所以null的前三位是0x000，js引擎会认为它是指向对象的引用，这是一个历史遗留bug。但事实上，null是空值。详细解释参见<a href="http://2ality.com/2013/10/typeof-null.html" target="_blank" rel="external">这里</a>。</p>
+</blockquote>
+<p>说到null，我们还要用图形表示一下null所起到的作用。对于上面的代码，我们将引用类型f置为null，该变量将不再指向堆中对象。图形表示如下：</p>
+<p><img src="/img/memory/m2.png" alt=""></p>
+<p>你会发现，原本f指向堆对象的线消失了，堆中对应的对象不再被f引用。</p>
+<p>看到这里，你也许会问：咦，那没有任何对象指向那个堆对象了，它还占据内存吗？如果还占据的话，岂不是占着茅坑不那啥吗？我想，如果能想到这一点，说明你是一个有追求的js开发者。</p>
+<p>是的，原本堆空间中的那个对象确实没有引用了，js引擎会在下一个垃圾回收节点将它回收掉。</p>
+<blockquote>
+<p>为了帮助大家更好的理解内存的分配与释放，建议大家在看配图的时候，一定要谨记箭头的走向，认真看箭头从哪个对象出发，又是指向哪个对象的。因为箭头指向代表变量引用，而引用是垃圾回收器辨别内存垃圾的依据。什么是垃圾呢？按照垃圾回收器的理解是，从根对象触发，沿着箭头指向，能够找到的对象，都不应该判定为垃圾。相反，从根对象触发，沿着箭头指向，不能够找到的对象，被判定为垃圾，将在下一个垃圾回收节点回收掉。<br>那么，与之相伴的是内存泄漏，什么叫内存泄漏呢？通俗一点讲，就是某个对象已经不会再被我们用到，但是垃圾回收器却发现从根对象仍然能够找到它，所以不认为它是垃圾，因此不会回收它，但是它确实对我们没有用处。这样就造成了内存的浪费，这种现象称作内存泄漏。</p>
+</blockquote>
+<p>理解了判定内存垃圾的方式以及内存泄漏，我们就可以通过画图的方式来检验代码是否存在内存泄漏，代码是否健壮。</p>
+<h4 id="复杂对象的内存表示"><a href="#复杂对象的内存表示" class="headerlink" title="复杂对象的内存表示"></a>复杂对象的内存表示</h4><p>上面代码中，f指向的对象是一个简单对象，只包含一个属性，如果堆中的是一个复杂对象，又该如何表示呢？让我们继续看代码<br><figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="keyword">var</span> a = &#123;</div><div class="line">  <span class="attr">b</span>: <span class="number">123</span>,</div><div class="line">  <span class="attr">c</span>: <span class="string">'abc'</span>,</div><div class="line">  <span class="attr">d</span>: <span class="literal">true</span>,</div><div class="line">  e = <span class="literal">null</span>,</div><div class="line">  f = &#123;</div><div class="line">    <span class="attr">h</span>: <span class="string">'test'</span>,</div><div class="line">    <span class="attr">j</span>: &#123;</div><div class="line">      <span class="attr">k</span>: <span class="number">567</span></div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>我们定义了一个全局变量a，指向堆内存中的一个复杂对象。如下图：</p>
+<p><img src="/img/memory/m3.png" alt=""></p>
+<p>全局定义的变量是常驻内存的，为什么常驻内存？我们从垃圾回收的角度分析一下：</p>
+<ul>
+<li>从根对象window沿着箭头寻找，首先找到a。</li>
+<li>通过a能找到堆中最左侧的大对象。</li>
+<li>通过最左侧的对象中的变量f，能找到右侧下方的对象。</li>
+<li>通过右侧下方对象的变量j，能找到右侧上方对象。</li>
+</ul>
+<p>所以，全局定义的变量a所关联的对象是常驻内存的。<br>再次思考一下，我们如何让垃圾回收器回收堆空间右侧的那两个对象呢？聪明的你也许想到了<br><figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line">a.f = <span class="literal">null</span></div></pre></td></tr></table></figure></p>
+<p>是的，将a.f的指针置为null就可以了。我们从垃圾回收的角度分析一下，a.f = null这段代码执行以后，f变量中存储的值变成了null，不再指向右侧的两个对象，按照我们之前的方法，从根对象window开始，沿着箭头寻找，找不到右侧对象，所以右侧两个对象成为内存垃圾，将被GC（垃圾回收器）回收掉。这就是当我们为一个变量赋值null之后，变量在内存中的变化。如下图所示：</p>
+<p><img src="/img/memory/m4.png" alt=""></p>
+<blockquote>
+<p>当然，我们也可以为变量赋予其他基础类型的值，断开和堆中对象的联系。</p>
+</blockquote>
+<h4 id="函数定义的内存表示"><a href="#函数定义的内存表示" class="headerlink" title="函数定义的内存表示"></a>函数定义的内存表示</h4><p>对于再复杂的对象，大家可以举一反三。接下来，我们看一下函数的定义：<br><figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">say</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> a = <span class="string">'测试'</span></div><div class="line">  <span class="keyword">var</span> b = &#123;</div><div class="line">    <span class="attr">c</span>: <span class="number">123</span></div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><img src="/img/memory/m7.png" alt=""></p>
+<p>可以看到函数对象指针在全局变量区，函数本身在堆中存放，函数我只画了了几个常见的属性。细心的你也许发现有个[[Socpes]]的属性，以后讲闭包的时候再对它作详细介绍，这里只大概介绍一下。</p>
+<blockquote>
+<p>[[Scopes]]属性是在函数创建的时候附加的属性，代表该函数的作用域链。</p>
+</blockquote>
+<h4 id="函数运行时的内存表示"><a href="#函数运行时的内存表示" class="headerlink" title="函数运行时的内存表示"></a>函数运行时的内存表示</h4><p>继续看一段代码：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">say</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> a = <span class="string">'测试'</span></div><div class="line">  <span class="keyword">var</span> b = &#123;</div><div class="line">    <span class="attr">c</span>: <span class="number">123</span></div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line">say()</div></pre></td></tr></table></figure>
+<p>很简单，我们定义一个函数，并执行它，变量的内存图如下：</p>
+<p><img src="/img/memory/m6.png" alt=""></p>
+<blockquote>
+<p>函数运行时，局部变量分配在栈空间，此时，外部window对象与栈空间中的变量没有引用关系。局部变量a是值类型，在栈中存放，局部变量b是引用类型，栈中存放对象在堆中的内存地址。</p>
+</blockquote>
+<p>函数运行结束后的图示如下：</p>
+<p><img src="/img/memory/m5.png" alt=""></p>
+<blockquote>
+<p>函数运行结束，局部变量由于没有外部引用，所以全部释放，同时堆中的对象也失去了引用，成为内存垃圾，被GC回收掉。</p>
+</blockquote>
+<h4 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h4><p>至此，关于js代码的内存表示就先告一段落，通过画图的方式，希望大家能对程序的执行有感性的理解，也希望能帮助大家通过画图的方式去判定内存垃圾。另外，大家在看下一篇文章<a href="https://juejin.im/post/5979b5755188253df1067397" target="_blank" rel="external">浏览器是怎么看闭包的</a>的时候，会发现有一些细节没有表示，大家不要太过于纠结，只需注意箭头走向即可。</p>
+
+    </section>
+    <footer class="post-footer">
+      <section class="author">
+    <h4>fanqi</h4>
+    <p>a frontend developer</p>
+</section>
+      <!--<section class="share">
+    <h4>Share this post</h4>
+    <a class="icon-twitter" href="http://twitter.com/share?url=http://yoursite.com/2017/07/28/js-variable-memory/"
+       onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+        <span class="hidden">Twitter</span>
+    </a>
+    <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http://yoursite.com/2017/07/28/js-variable-memory/"
+       onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+        <span class="hidden">Facebook</span>
+    </a>
+    <a class="icon-google-plus" href="https://plus.google.com/share?url=http://yoursite.com/2017/07/28/js-variable-memory/"
+       onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+        <span class="hidden">Google+</span>
+    </a>
+</section>-->
+    </footer>
+  </article>
+  <nav class="pagination" role="pagination">
+    
+    <span class="page-number">•</span>
+    
+    <a class="older-posts" href="/2017/07/25/you-can-understand-closure/">
+        浏览器是怎么看闭包的。
+    </a>
+    
+</nav>
+
+  <!--<div id="comment" class="comments-area">
+    <h1 class="title"><a href="#disqus_comments" name="disqus_comments">Comments</a></h1>
+
+    
+</div>-->
+</main>
+
+
+  
+<footer class="site-footer">
+  
+  <div class="inner">
+     <section class="copyright">All content copyright <a href="/">lucefer</a><br/> &copy; 2014 &bull; All rights reserved.</section>
+  </div>
+</footer>
+
+  <script src="/js/jquery.min.js"></script>
+
+<script type="text/javascript" src="/js/jquery.fitvids.js"></script>
+<script type="text/javascript" src="/js/index.js"></script>
+
+
+
+  <script type="text/javascript" src="http://tajs.qq.com/stats?sId=63051648" charset="UTF-8"></script>
+
+
+
+
+</div>
+</body>
+</html>

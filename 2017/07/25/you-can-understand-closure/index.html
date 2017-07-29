@@ -85,12 +85,15 @@
       
 
       <p>闭包，是javascript的一大理解难点，网上关于闭包的文章也很多，但是很少有能让人看了就彻底明白的文章。究其原因，我想是因为闭包涉及了一连串的知识点。只有把这一连串的知识点都理解透彻，实现一个概念的闭环，才可以真正理解它。今天打算换个角度来理解闭包，从内存分配与回收的角度阐述，希望能帮助你真正消化掉所看到的闭包知识，同时也希望本文是你看的最后一篇关于闭包的文章。</p>
+<blockquote>
+<p>大家看本文中的配图时，请牢记<strong>箭头的指向</strong>。因为它是根对象window遍历内存垃圾所依赖的原则，能够从window开始，顺着箭头找到的都不是内存垃圾，不会被回收掉。只有那些找不到的对象才是内存垃圾，才会在适当的时机被gc回收。</p>
+</blockquote>
 <h4 id="闭包简介"><a href="#闭包简介" class="headerlink" title="闭包简介"></a>闭包简介</h4><p>函数嵌套函数时，内层函数引用了外层函数作用域下的变量，并且内层函数被全局环境下的变量引用，就形成了闭包。</p>
 <blockquote>
 <p>闭包实质上是函数作用域的副产物。</p>
 </blockquote>
 <p>关于闭包我们需要特别重视的一点是<strong>函数内部定义的所有函数共享同一个闭包对象</strong>。<br>什么意思呢？看如下代码：</p>
-<figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="keyword">var</span> a</div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">b</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> c = <span class="string">'1'</span></div><div class="line">  <span class="keyword">var</span> d = <span class="string">'2'</span></div><div class="line">  <span class="function"><span class="keyword">function</span> <span class="title">e</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(c)</div><div class="line">  &#125;</div><div class="line">  <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log（d)</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">return</span> f</div><div class="line">&#125;</div><div class="line">a = b()</div></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="keyword">var</span> a</div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">b</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> c = <span class="keyword">new</span> <span class="built_in">String</span>(<span class="string">'1'</span>)</div><div class="line">  <span class="keyword">var</span> d = <span class="keyword">new</span> <span class="built_in">String</span>(<span class="string">'2'</span>)</div><div class="line">  <span class="function"><span class="keyword">function</span> <span class="title">e</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(c)</div><div class="line">  &#125;</div><div class="line">  <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log（d)</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">return</span> f</div><div class="line">&#125;</div><div class="line">a = b()</div></pre></td></tr></table></figure>
 <blockquote>
 <p>上面代码中f引用了变量d，同时f被外部变量a引用，所以形成闭包，导致变量d滞留在内存中。我们思考一下，那么变量c呢？好像我们并没有用到c，应该不会滞留在内存中吧。然后事实是c也会滞留在内存中。如上代码形成的闭包包含两个成员，c和d。这种现象成为函数内闭包共享。</p>
 </blockquote>
@@ -103,13 +106,13 @@
 </ul>
 <p>这些内容大家可以谷歌百度之，大概理解一下。接下来我会讲如何从浏览器的视角来理解闭包，所以不做过多讲解。</p>
 <h4 id="如何判别内存垃圾"><a href="#如何判别内存垃圾" class="headerlink" title="如何判别内存垃圾"></a>如何判别内存垃圾</h4><p>现代浏览器的垃圾回收过程比较复杂，详细过程大家可以自行google之。这里我只讲如何判定内存垃圾。大体上可以这么理解，从根对象开始寻找，只要能顺着引用找到的，都不能被回收。顺着引用找不到的对象被视为垃圾，在下一个垃圾回收节点被回收。寻找垃圾，可以理解为顺藤摸瓜的过程。</p>
-<h4 id="闭包的内存表示"><a href="#闭包的内存表示" class="headerlink" title="闭包的内存表示"></a>闭包的内存表示</h4><p>从最简单的代码入手，我们看下全局变量定义。<br><figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="keyword">var</span> a = <span class="string">'小歌'</span></div></pre></td></tr></table></figure></p>
+<h4 id="闭包的内存表示"><a href="#闭包的内存表示" class="headerlink" title="闭包的内存表示"></a>闭包的内存表示</h4><p>从最简单的代码入手，我们看下全局变量定义。<br><figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="keyword">var</span> a = <span class="keyword">new</span> <span class="built_in">String</span>(<span class="string">'小歌'</span>)</div></pre></td></tr></table></figure></p>
 <p>这样一段代码，在内存里表示如下</p>
 <p><img src="/img/closure/nc1.png" alt=""></p>
 <blockquote>
 <p>在全局环境下，定义了一个变量a，并给a赋值了一个字符串，箭头表示引用。</p>
 </blockquote>
-<p>我们再定义一个函数：<br><figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="keyword">var</span> a = <span class="string">'小歌'</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">teach</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> b = <span class="string">'小谷'</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>我们再定义一个函数：<br><figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="keyword">var</span> a = <span class="keyword">new</span> <span class="built_in">String</span>(<span class="string">'小歌'</span>)</div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">teach</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> b = <span class="keyword">new</span> <span class="built_in">String</span>(<span class="string">'小谷'</span>)</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <p>内存结构如下：</p>
 <p><img src="/img/closure/nc2.png" alt=""></p>
 <p>&gt;</p>
@@ -120,10 +123,10 @@
 <p>需要明确的是，浏览器下global指向window对象，nodejs环境global指向global对象</p>
 </blockquote>
 <p>请再次谨记：<br><strong> 函数在执行的时候，会申请空间创建执行上下文，执行上下文会包含函数定义时的作用域链，其次包含函数内部定义的变量、参数等，当函数在当前作用域执行时，会首先查找当前作用域下的变量，如果找不到，就会向函数定义时的作用域链中查找，直到全局作用域，如果变量再全局作用域下也找不到，则会抛出错误。</strong></p>
-<p>我们都知道，函数执行的时候，会创建一个执行上下文，其实就是在申请一块栈结构的内存空间，函数中的局部变量都在这块空间中分配，函数执行完毕，局部变量在下一个垃圾回收节点被回收。OK，我们再次升级一下代码，看一下函数运行时内存的结构。<br><figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="keyword">var</span> a = <span class="string">'小歌'</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">teach</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> b = <span class="string">'小谷'</span></div><div class="line">&#125;</div><div class="line">teach()</div></pre></td></tr></table></figure></p>
+<p>我们都知道，函数执行的时候，会创建一个执行上下文，其实就是在申请一块栈结构的内存空间，函数中的局部变量都在这块空间中分配，函数执行完毕，局部变量在下一个垃圾回收节点被回收。OK，我们再次升级一下代码，看一下函数运行时内存的结构。<br><figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="keyword">var</span> a = <span class="keyword">new</span> <span class="built_in">String</span>(<span class="string">'小歌'</span>)</div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">teach</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> b = <span class="keyword">new</span> <span class="built_in">String</span>(<span class="string">'小谷'</span>)</div><div class="line">&#125;</div><div class="line">teach()</div></pre></td></tr></table></figure></p>
 <p>内存表示如下：<br><img src="/img/closure/nc3.png" alt=""></p>
 <p>很明显，我们可以看到，函数在执行过程中仅仅做了一个局部变量的赋值，并未与全局环境下的变量发生关系，所以我们从window对象沿着引用（图中的箭头）寻找的话，是找不到执行上下文中的变量b的。因此函数执行完后，变量b将被回收。</p>
-<p>我们再次升级一下代码：<br><figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="keyword">var</span> a = <span class="string">'小歌'</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">teach</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> b = <span class="string">'小谷'</span></div><div class="line">  <span class="keyword">var</span> say = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(b)</div><div class="line">  &#125;</div><div class="line">  a =  say</div><div class="line">&#125;</div><div class="line">teach()</div></pre></td></tr></table></figure></p>
+<p>我们再次升级一下代码：<br><figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="keyword">var</span> a = <span class="keyword">new</span> <span class="built_in">String</span>(<span class="string">'小歌'</span>)</div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">teach</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> b = <span class="keyword">new</span> <span class="built_in">String</span>(<span class="string">'小谷'</span>)</div><div class="line">  <span class="keyword">var</span> say = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(b)</div><div class="line">  &#125;</div><div class="line">  a =  say</div><div class="line">&#125;</div><div class="line">teach()</div></pre></td></tr></table></figure></p>
 <p>内存表示如下：</p>
 <p><img src="/img/closure/nc4.png" alt=""></p>
 <blockquote>
@@ -142,7 +145,7 @@
 </li>
 </ol>
 <p>函数执行完毕，正常情况下变量b应该被释放了。但是我们发现，沿着window找下去，是能够找到b的，根据我们前面讲的判定内存垃圾的原理得知，b不是内存垃圾，所以b不能被释放，这就是为什么闭包会让函数内变量保存在内存中的原因。</p>
-<p>再次升级代码，我们看下<strong>闭包共享</strong>的内存表示：<br><figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="keyword">var</span> a = <span class="string">'0'</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">b</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> c = <span class="string">'1'</span></div><div class="line">  <span class="keyword">var</span> d = <span class="string">'2'</span></div><div class="line">  <span class="function"><span class="keyword">function</span> <span class="title">e</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(c)</div><div class="line">  &#125;</div><div class="line">  <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log（d)</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">return</span> f</div><div class="line">&#125;</div><div class="line">a = b()</div></pre></td></tr></table></figure></p>
+<p>再次升级代码，我们看下<strong>闭包共享</strong>的内存表示：<br><figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="keyword">var</span> a = <span class="keyword">new</span> <span class="built_in">String</span>(<span class="string">'0'</span>)</div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">b</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> c = <span class="keyword">new</span> <span class="built_in">String</span>(<span class="string">'1'</span>)</div><div class="line">  <span class="keyword">var</span> d = <span class="keyword">new</span> <span class="built_in">String</span>(<span class="string">'2'</span>)</div><div class="line">  <span class="function"><span class="keyword">function</span> <span class="title">e</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(c)</div><div class="line">  &#125;</div><div class="line">  <span class="function"><span class="keyword">function</span> <span class="title">f</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log（d)</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">return</span> f</div><div class="line">&#125;</div><div class="line">a = b()</div></pre></td></tr></table></figure></p>
 <p><img src="/img/closure/nc5.png" alt=""></p>
 <blockquote>
 <p>灰色表示的图形是内存垃圾，将会被垃圾回收器回收。</p>
@@ -151,7 +154,7 @@
 <p>你也许会问了，这种特性是如何能导致内存泄漏的呢？好吧，思考如下一段代码，比较经典的meteor内存泄漏问题。<br><figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="keyword">var</span> t = <span class="literal">null</span>;</div><div class="line"><span class="keyword">var</span> replaceThing = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">var</span> o = t</div><div class="line">    <span class="keyword">var</span> unused = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">        <span class="keyword">if</span> (o)</div><div class="line">            <span class="built_in">console</span>.log(<span class="string">"hi"</span>)</div><div class="line">    &#125;</div><div class="line">    t = &#123;</div><div class="line">            <span class="attr">longStr</span>: <span class="keyword">new</span> <span class="built_in">Array</span>(<span class="number">1000000</span>).join(<span class="string">'*'</span>),</div><div class="line">            <span class="attr">someMethod</span>: <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</div><div class="line">              <span class="built_in">console</span>.log(<span class="number">1</span>)</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">&#125;</div><div class="line">setInterval(replaceThing, <span class="number">1000</span>)</div></pre></td></tr></table></figure></p>
 <p>这段代码是有内存泄漏的，在浏览器中执行这段代码，你会发现内存不断上升,虽然gc释放了一些内存，但是仍然有一些内存无法释放，而且是梯度上升的。如下图</p>
 <p><img src="/img/closure/nc6.png" alt=""></p>
-<p>这种曲线说明是有内存泄漏的，我们可以通过开发者工具去分析哪些对象没有被回收掉。事实上我可以告诉大家，没有释放掉的内存其实就是我们每次创建的大对象theThing。我们通过画图的方式来看下：</p>
+<p>这种曲线说明是有内存泄漏的，我们可以通过开发者工具去分析哪些对象没有被回收掉。事实上我可以告诉大家，没有释放掉的内存其实就是我们每次创建的大对象t。我们通过画图的方式来看下：</p>
 <p><img src="/img/closure/nc7.png" alt=""></p>
 <p>上面这张图是假设replaceThing函数执行了三次，你会发现，每次我们给变量t赋予一个大对象的时候，由于<strong>闭包共享</strong>的缘故，之前的大对象仍然能够从window对象跟踪到，所以这些大对象都不能被回收掉。其实真正对我们有用的是最后一次为t赋予的大对象，那么之前的对象则造成了内存泄漏。</p>
 <blockquote>
@@ -184,6 +187,10 @@
     </footer>
   </article>
   <nav class="pagination" role="pagination">
+    
+    <a class="newer-posts" href="/2017/07/28/js-variable-memory/">
+        ← 可视化分析js的内存分配与回收
+    </a>
     
     <span class="page-number">•</span>
     

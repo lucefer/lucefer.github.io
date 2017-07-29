@@ -75,13 +75,52 @@
   <article class="post">
     <header class="post-header">
 
+      <h2 class="post-title"><a href="/2017/07/28/js-variable-memory/">可视化分析js的内存分配与回收</a></h2>
+    </header>
+    <section class="post-excerpt">
+      <p>
+      
+        
+之前写了一篇文章浏览器是怎么看闭包的，发现有些读者对js内存分配与回收懵懵懂懂，理解文章的配图比较费劲，我想主要原因是我的配图省略了一些细节，所以导致大家理解困难。今天专门写一篇关于js内存分配回收的文章，帮助大家理解js代码的内存表示。
+
+数据类型先唠叨些基本知识：
+
+javascript的数据类型分为基本类型和引用类型（对象）。基本类型分为如下几种：
+数字字面量
+字符串字面量
+布尔字面量
+undefined
+null
+
+
+引用类型
+      
+      </p>
+      
+      <p>
+          <a href="/2017/07/28/js-variable-memory/" class="excerpt-link">Read More...</a>
+      </p>
+      
+    </section>
+    <span class="post-meta">
+      <time datetime="2017-07-28T03:54:46.000Z" itemprop="datePublished">
+          2017-07-28
+      </time>
+    
+</span>
+  </article>
+  
+  <article class="post">
+    <header class="post-header">
+
       <h2 class="post-title"><a href="/2017/07/25/you-can-understand-closure/">浏览器是怎么看闭包的。</a></h2>
     </header>
     <section class="post-excerpt">
       <p>
       
         闭包，是javascript的一大理解难点，网上关于闭包的文章也很多，但是很少有能让人看了就彻底明白的文章。究其原因，我想是因为闭包涉及了一连串的知识点。只有把这一连串的知识点都理解透彻，实现一个概念的闭环，才可以真正理解它。今天打算换个角度来理解闭包，从内存分配与回收的角度阐述，希望能帮助你真正消化掉所看到的闭包知识，同时也希望本文是你看的最后一篇关于闭包的文章。
-闭包简介函数嵌套函数时，内层函数引用了外层函数作用域下的变量，并且内层
+
+大家看本文中的配图时，请牢记箭头的指向。因为它是根对象window遍
       
       </p>
       
