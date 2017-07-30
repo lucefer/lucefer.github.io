@@ -149,7 +149,7 @@
 <p>当然，我们也可以为变量赋予其他基础类型的值，断开和堆中对象的联系。</p>
 </blockquote>
 <h4 id="函数定义的内存表示"><a href="#函数定义的内存表示" class="headerlink" title="函数定义的内存表示"></a>函数定义的内存表示</h4><p>对于再复杂的对象，大家可以举一反三。接下来，我们看一下函数的定义：<br><figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">say</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> a = <span class="string">'测试'</span></div><div class="line">  <span class="keyword">var</span> b = &#123;</div><div class="line">    <span class="attr">c</span>: <span class="number">123</span></div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
-<p><img src="/img/memory/m7.png" alt=""></p>
+<p><img src="/img/memory/m8.png" alt=""></p>
 <p>可以看到函数对象指针在全局变量区，函数本身在堆中存放，函数我只画了了几个常见的属性。细心的你也许发现有个[[Socpes]]的属性，以后讲闭包的时候再对它作详细介绍，这里只大概介绍一下。</p>
 <blockquote>
 <p>[[Scopes]]属性是在函数创建的时候附加的属性，代表该函数的作用域链。</p>
