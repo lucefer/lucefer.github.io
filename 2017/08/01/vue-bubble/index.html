@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+  <title>基于vuejs的消息气泡插件 | lucefer</title>
+  <meta name="description" content="details is the key to success" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" type="text/css" href="/css/screen.css" />
+  <!--<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Noto+Serif:400,700,400italic|Open+Sans:700,400" />
+-->
+  <meta name="generator" content="lucefer">
+
+  
+  
+  
+
+  
+</head>
+
+
+<body class="post-template nav-closed">
+
+<nav class="nav">
+  <h3 class="nav-title">Menu</h3>
+  <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item menu-item-/">
+          <a href="/" rel="section">
+首页
+          </a>
+        </li>
+      
+        <li class="menu-item menu-item-/archives">
+          <a href="/archives" rel="section">
+归档
+          </a>
+        </li>
+      
+    </ul>
+  
+
+</nav>
+<span class="nav-cover"></span>
+
+  <div class="site-wrapper">
+  <header class="site-head"  style="background-image: url(
+    //ifanqi.me/img/header-bg.jpg)"
+        >
+        <nav class="main-nav overlay clearfix"><a class="menu-button" href="#"><span class="burger">☰</span><span class="word">Menu</span></a></nav>
+            <div class="vertical">
+                <div class="site-head-content inner">
+                    
+                            <h1 class="blog-title"><a href="/">lucefer</a></h1>
+                            <h2 class="blog-description">details is the key to success</h2>
+                </div>
+                <a class="bloglogo" href="https://github.com/lucefer" target="_blank">
+    <span class="icon-github" style="color:white;font-size:2em"></span>
+    </a>
+            </div>
+            <a class="scroll-down icon-arrow-left" href="#content"><span class="hidden">Scroll Down</span></a>
+</header>
+
+  
+
+<main class="content"  role="main">
+  <article class="post">
+
+    <h1 class="post-title">基于vuejs的消息气泡插件</h1>
+    <span class="post-meta">
+      <time datetime="2017-08-01T06:09:42.000Z" itemprop="datePublished">
+          2017-08-01
+      </time>
+    
+</span>
+    <section class="post-content">
+      
+
+      <p>之前介绍了一款基于vue的文本折行显示组件<a href="https://github.com/lucefer/ellipsis-plus" target="_blank" rel="external">ellipisis-plus</a>，今天介绍一款仿照QQ消息气泡的插件<a href="https://github.com/lucefer/vue-bubble" target="_blank" rel="external">vue-bubble</a>。</p>
+<blockquote>
+<p>仿照QQ消息气泡想法的起源是来自掘金的安卓小伙伴们，看到他们在安卓平台实现了这种效果，所以想迁移到web上。在这里要感谢他们。</p>
+</blockquote>
+<p>先放张图看一下效果：</p>
+<p><img src="/img/vue-bubble/qipao.gif" alt=""></p>
+<h4 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h4><ul>
+<li>使用SVG绘制贝塞尔曲线以及圆形气泡。</li>
+<li>关键点的坐标计算借鉴这位小伙伴的思路<a href="http://mp.weixin.qq.com/s/Dvamomoh4OAF2Ipngth2LQ" target="_blank" rel="external">高仿QQ未读消息气泡拖拽黏连效果</a>，非常感谢他。</li>
+<li>气泡抖动是在鼠标抬起（mouseup）（移动设备上用的ontouchend，ontouchcanel）事件触发时，使用定时器更新元素坐标。</li>
+</ul>
+<h4 id="如何使用"><a href="#如何使用" class="headerlink" title="如何使用"></a>如何使用</h4><p>这个插件使用起来也是相当简单了：</p>
+<ol>
+<li><p>安装</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line">npm install vue-bubble</div></pre></td></tr></table></figure>
+</li>
+<li><p>引入</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="keyword">const</span> vueBubble <span class="keyword">from</span> <span class="string">'vue-bubble'</span></div><div class="line">Vue.use(vueBubble)</div></pre></td></tr></table></figure>
+</li>
+<li><p>使用<br>v-bubble指令对应的是一个对象。该对象有如下可选值：</p>
+</li>
+</ol>
+<ul>
+<li><p>value</p>
+<blockquote>
+<p>必选，消息气泡显示的内容，value为0的时候，气泡默认是不显示的。</p>
+</blockquote>
+</li>
+<li><p>show</p>
+<blockquote>
+<p>可选，是否显示消息气泡，true为显示，false为隐藏。需要注意的是，该属性优先级大于value<br>比如，value=0，show为true，这种情况show起作用，value忽略，所以气泡显示。</p>
+</blockquote>
+</li>
+<li><p>afterHide</p>
+<blockquote>
+<p>可选，回调函数，气泡拖拽消失之后执行的回调，一般用于重置value。afterHide如果想带参数的话，可以使用下面的方式来配置，利用Function.prototype.bind函数把要携带的参数传递过去。</p>
+</blockquote>
+</li>
+</ul>
+<blockquote>
+<p>下面代码是github仓库中的demo代码片段。</p>
+</blockquote>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line">&lt;i v-bubble=<span class="string">"&#123;show:item.show,afterHide: (hide.bind(this,item)),value : item.count&#125;"</span> <span class="class"><span class="keyword">class</span></span>=<span class="string">"msg"</span>&gt;&lt;/i&gt;</div></pre></td></tr></table></figure>
+<h4 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h4><p>这个插件实现原理比较简单，只是细节有些多，仔细酝酿了一下，也没酝酿出什么长篇大论，对于我们程序员来说，还是直接上代码来的实在，(<em>^__^</em>) 嘻嘻……再次奉上vue-bubble的<a href="https://github.com/lucefer/vue-bubble" target="_blank" rel="external">github地址</a>，，喜欢它的小伙伴可以给个小小的star哈~</p>
+
+    </section>
+    <footer class="post-footer">
+      <section class="author">
+    <h4>fanqi</h4>
+    <p>a frontend developer</p>
+</section>
+      <!--<section class="share">
+    <h4>Share this post</h4>
+    <a class="icon-twitter" href="http://twitter.com/share?url=http://yoursite.com/2017/08/01/vue-bubble/"
+       onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+        <span class="hidden">Twitter</span>
+    </a>
+    <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http://yoursite.com/2017/08/01/vue-bubble/"
+       onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+        <span class="hidden">Facebook</span>
+    </a>
+    <a class="icon-google-plus" href="https://plus.google.com/share?url=http://yoursite.com/2017/08/01/vue-bubble/"
+       onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+        <span class="hidden">Google+</span>
+    </a>
+</section>-->
+    </footer>
+  </article>
+  <nav class="pagination" role="pagination">
+    
+    <span class="page-number">•</span>
+    
+    <a class="older-posts" href="/2017/07/28/js-variable-memory/">
+        可视化分析js的内存分配与回收
+    </a>
+    
+</nav>
+
+  <!--<div id="comment" class="comments-area">
+    <h1 class="title"><a href="#disqus_comments" name="disqus_comments">Comments</a></h1>
+
+    
+</div>-->
+</main>
+
+
+  
+<footer class="site-footer">
+  
+  <div class="inner">
+     <section class="copyright">All content copyright <a href="/">lucefer</a><br/> &copy; 2014 &bull; All rights reserved.</section>
+  </div>
+</footer>
+
+  <script src="/js/jquery.min.js"></script>
+
+<script type="text/javascript" src="/js/jquery.fitvids.js"></script>
+<script type="text/javascript" src="/js/index.js"></script>
+
+
+
+  <script type="text/javascript" src="http://tajs.qq.com/stats?sId=63051648" charset="UTF-8"></script>
+
+
+
+
+</div>
+</body>
+</html>
