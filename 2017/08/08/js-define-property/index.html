@@ -121,6 +121,16 @@
 <p>该属性是否可配置。这是一个很有意思的描述符，通过改变它的值，你会得到不一样的结果。</p>
 </blockquote>
 </li>
+<li><p>get</p>
+<blockquote>
+<p>一个为属性提供getter的方法。如果没有该方法，则返回undefined。该方法返回值作为属性值使用，默认为undefined。你也许会问了，如果我既设置了value，又设置了get方法，那该如何呢？很高兴你能这么想，这种情况浏览器会报错。浏览器不允许value和get或者set同时存在。如果有value，就不能设置get和set方法。反之，如果设置了get或者set方法，则不能设置value。否则浏览器会报错。</p>
+</blockquote>
+</li>
+<li><p>set</p>
+<blockquote>
+<p>一个为属性提供setter的方法。如果没有setter则为undefined。该方法将接收唯一参数，并将该参数的新值分配给该属性，默认为 undefined。set同样不能和value同时存在。</p>
+</blockquote>
+</li>
 </ul>
 <p>通过总结，我们发现，描述符的value默认值是undefined，其他三个属性的默认值都是false。<br>我们写下代码，演示下不同值时的执行结果。</p>
 <ol>
@@ -147,12 +157,13 @@
 <ol>
 <li>enumerable<br>enumerable默认为false，当为false时，通过Object.keys和for..in无法列举出该属性，比较简单，此处也不做代码演示。</li>
 <li>configurable<br>默认为false，当为false时，通过Object.defineProperty这种方式对configurable、value、enumerable、writable的改变通通报错。<blockquote>
-<p>这里要提一下所谓的改变的含义。此处的改变是指要修改后的值和修改前的值不一样，才叫改变。如果一样的话就不能称为改变。</p>
+<p>这里要提一下所谓的改变的含义。此处的改变是指要修改后的值和修改前的值不一样，才叫改变。如果是引用对象的话，比如value的值是对象，get的值是函数，当引用值改变的话才叫改变，引用值不变的话，不叫改变。</p>
 </blockquote>
 </li>
 </ol>
-<p>看如下代码：<br><figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="keyword">var</span> d = &#123;&#125;</div><div class="line"><span class="comment">//定义</span></div><div class="line"><span class="built_in">Object</span>.defineProperty(d, age, &#123;</div><div class="line">  <span class="attr">value</span>: <span class="number">10</span></div><div class="line">&#125;)</div><div class="line"><span class="comment">//修改，不报错</span></div><div class="line"><span class="built_in">Object</span>.defineProperty(d, age, &#123;</div><div class="line">  <span class="attr">value</span>: <span class="number">10</span></div><div class="line">&#125;)</div><div class="line"><span class="comment">// 改变，报错</span></div><div class="line"><span class="built_in">Object</span>.defineProperty(d, age, &#123;</div><div class="line">  <span class="attr">value</span>: <span class="number">11</span></div><div class="line">&#125;)</div></pre></td></tr></table></figure></p>
-<p>明白改变和修改的区别了吧~<br>所以我们又得出一个结论：<br>当configurable设置为false时，通过Object.defineProperty这种方式所做的任何改变（请注意，这里是改变)都将引起js报错。</p>
+<p>看如下代码：<br><figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="keyword">var</span> d = &#123;&#125;, age = <span class="string">"age"</span>, family = &#123;&#125;, getter = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;&#125;</div><div class="line"><span class="comment">//定义</span></div><div class="line"><span class="built_in">Object</span>.defineProperty(d, age, &#123;</div><div class="line">  <span class="attr">value</span>: <span class="number">10</span></div><div class="line">&#125;)</div><div class="line"><span class="comment">//修改，没有改变，不报错</span></div><div class="line"><span class="built_in">Object</span>.defineProperty(d, age, &#123;</div><div class="line">  <span class="attr">value</span>: <span class="number">10</span></div><div class="line">&#125;)</div><div class="line"><span class="comment">// 改变，报错</span></div><div class="line"><span class="built_in">Object</span>.defineProperty(d, age, &#123;</div><div class="line">  <span class="attr">value</span>: <span class="number">11</span></div><div class="line">&#125;)</div><div class="line"><span class="comment">//定义</span></div><div class="line"><span class="built_in">Object</span>.defineProperty(d, <span class="string">'family'</span>, &#123;</div><div class="line">  <span class="attr">value</span>: family</div><div class="line">&#125;)</div><div class="line">family.father = <span class="string">'老李'</span></div><div class="line"><span class="comment">// 修改，但是没有改变，因为value对family这个对象的引用没有变化。</span></div><div class="line"><span class="built_in">Object</span>.defineProperty(d, <span class="string">'family'</span>, &#123;</div><div class="line">  <span class="attr">value</span>: family</div><div class="line">&#125;)</div><div class="line"><span class="comment">// 改变，因为value指向了一个新的引用，value值变化了。</span></div><div class="line"><span class="built_in">Object</span>.defineProperty(d, <span class="string">'family'</span>, &#123;</div><div class="line">  <span class="attr">value</span>: &#123;&#125;</div><div class="line">&#125;)</div><div class="line"><span class="comment">// 改变</span></div><div class="line"><span class="built_in">Object</span>.defineProperty(d, age, &#123;</div><div class="line">  <span class="attr">get</span>: getter</div><div class="line">&#125;)</div><div class="line"><span class="comment">// 改变</span></div><div class="line"><span class="built_in">Object</span>.defineProperty(d, age, &#123;</div><div class="line">  <span class="attr">get</span>:<span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;&#125;</div><div class="line">&#125;)</div></pre></td></tr></table></figure></p>
+<p>明白改变和修改的区别了吧~</p>
+<p>以上我们又得出一个结论：<br><strong>当configurable设置为false时，通过Object.defineProperty这种方式所做的任何改变（请注意，这里是改变)都将引起js报错。</strong></p>
 <h4 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h4><p>以上就是Object.defineProperty的用法，小小的一个API竟有这么多门道在里面，所以我们要怀着敬畏的态度学习JS，不要觉得JS简单，简单只是入门简单，看起来简单。</p>
 
     </section>
