@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html" charset="UTF-8" >
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+  <title>Object.defineProperty | lucefer</title>
+  <meta name="description" content="details is the key to success" />
+  <meta name="HandheldFriendly" content="True" />
+  <meta name="MobileOptimized" content="320" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="stylesheet" type="text/css" href="/css/screen.css" />
+  <!--<link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Noto+Serif:400,700,400italic|Open+Sans:700,400" />
+-->
+  <meta name="generator" content="lucefer">
+
+  
+  
+  
+
+  
+</head>
+
+
+<body class="post-template nav-closed">
+
+<nav class="nav">
+  <h3 class="nav-title">Menu</h3>
+  <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item menu-item-/">
+          <a href="/" rel="section">
+首页
+          </a>
+        </li>
+      
+        <li class="menu-item menu-item-/archives">
+          <a href="/archives" rel="section">
+归档
+          </a>
+        </li>
+      
+    </ul>
+  
+
+</nav>
+<span class="nav-cover"></span>
+
+  <div class="site-wrapper">
+  <header class="site-head"  style="background-image: url(
+    //ifanqi.me/img/header-bg.jpg)"
+        >
+        <nav class="main-nav overlay clearfix"><a class="menu-button" href="#"><span class="burger">☰</span><span class="word">Menu</span></a></nav>
+            <div class="vertical">
+                <div class="site-head-content inner">
+                    
+                            <h1 class="blog-title"><a href="/">lucefer</a></h1>
+                            <h2 class="blog-description">details is the key to success</h2>
+                </div>
+                <a class="bloglogo" href="https://github.com/lucefer" target="_blank">
+    <span class="icon-github" style="color:white;font-size:2em"></span>
+    </a>
+            </div>
+            <a class="scroll-down icon-arrow-left" href="#content"><span class="hidden">Scroll Down</span></a>
+</header>
+
+  
+
+<main class="content"  role="main">
+  <article class="post">
+
+    <h1 class="post-title">Object.defineProperty</h1>
+    <span class="post-meta">
+      <time datetime="2017-08-08T08:25:05.000Z" itemprop="datePublished">
+          2017-08-08
+      </time>
+    
+</span>
+    <section class="post-content">
+      
+
+      <p><strong>Object.defineProperty</strong>是伴随着ES5的发布而出现的，是一个很强大的属性，著名的前端框架vuejs就是借用它实现的数据变动检测，接下来我们学习一下它的用法。</p>
+<h4 id="传统方法"><a href="#传统方法" class="headerlink" title="传统方法"></a>传统方法</h4><p>如果不使用defineProperty，我们可以用以下两种方式定义属性：<br><figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="keyword">var</span> a = &#123;&#125;</div><div class="line"><span class="comment">// 通过.定义属性</span></div><div class="line">a.name = <span class="string">'fanqi'</span></div><div class="line"><span class="comment">// 通过属性字符串索引定义属性</span></div><div class="line">a[<span class="string">"age"</span>] = <span class="number">10</span></div><div class="line">a.age = <span class="number">20</span></div></pre></td></tr></table></figure></p>
+<p>上面两种方式在定义的同时进行了赋值，或者说，上面两种方式必须为当前对象身上不存在的属性赋值之后，才能将属性添加到对象上，看下反例：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="keyword">var</span> b = &#123;&#125;</div><div class="line">b.name</div><div class="line">b[<span class="string">"age"</span>]</div><div class="line"><span class="built_in">console</span>.log(b)</div></pre></td></tr></table></figure>
+<p>上面这种方式，我们没有赋值，所以打印b，你会发现name和age没有添加到对象b上。</p>
+<h4 id="新姿势之Object-defineProperty"><a href="#新姿势之Object-defineProperty" class="headerlink" title="新姿势之Object.defineProperty"></a>新姿势之Object.defineProperty</h4><p>Object.defineProperty，见名之意，即为对象定义属性。现在，我们可以用它来为对象定义属性，接下来看下Object.defineProperty如何使用。<br><strong>定义</strong></p>
+<blockquote>
+<p>The Object.defineProperty() method defines a new property directly on an object, or modifies an exisiting property on an object, and returns the object.</p>
+</blockquote>
+<p>这段英文翻译过来就是，Object.defineProperty方法可以直接为对象定义新属性，或者修改已经存在的属性，并返回该对象。</p>
+<p><strong>语法</strong></p>
+<p>Object.defineProperty(object, propertyName, descriptor)<br>参数解释：</p>
+<blockquote>
+<p>object，必需，<strong>准备添加或者修改属性的对象</strong>。既可以是原生js对象，也可以是dom对象。<br>propertyName，必需，<strong>属性名称</strong>。<br>descriptor, 必需，<strong>属性描述符</strong>。</p>
+</blockquote>
+<p><strong>属性描述符</strong><br>接下来重点要介绍的就是属性描述符（descriptor）的设置，该参数有四类选项可以设置：</p>
+<ul>
+<li><p>value</p>
+<blockquote>
+<p>属性的值，如果不设置，默认为undefined。</p>
+</blockquote>
+</li>
+<li><p>writable</p>
+<blockquote>
+<p>该属性是否可写，默认为false。设置为false时，对该属性的值做任何修改都不生效，但也不报错，仅仅是不生效而已。使用传统方式定义的属性，该描述符默认为true，即允许修改属性值。</p>
+</blockquote>
+</li>
+<li><p>enumerable</p>
+<blockquote>
+<p>该属性是否可枚举，默认值为false。我们知道，对象的枚举方法有for..in，Object.keys。如果该属性设置为false，那么通过枚举方法枚举对象属性时，该属性是枚举不出来的。使用传统方式定义的属性，该属性描述符为true，即允许枚举。</p>
+</blockquote>
+</li>
+<li><p>configurable</p>
+<blockquote>
+<p>该属性是否可配置。这是一个很有意思的描述符，通过改变它的值，你会得到不一样的结果。</p>
+</blockquote>
+</li>
+</ul>
+<p>通过总结，我们发现，描述符的value默认值是undefined，其他三个属性的默认值都是false。<br>我们写下代码，演示下不同值时的执行结果。</p>
+<ol>
+<li>writable<br>writable默认为false，也就是对value的修改无效，但是允许你做修改操作，不会报错。<figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="keyword">var</span> a = &#123;&#125;</div><div class="line"><span class="built_in">Object</span>.defineProperty(a, <span class="string">"age"</span>, &#123;</div><div class="line">  <span class="attr">value</span>: <span class="number">10</span></div><div class="line">&#125;)</div><div class="line"><span class="comment">//到此处，a.age= 10</span></div><div class="line">a.age = <span class="number">11</span></div><div class="line"><span class="comment">//此处a.age仍为10，因为writable默认为false，修改无效。</span></div><div class="line"><span class="built_in">console</span>.log(a)</div><div class="line"><span class="comment">//利用defineProperty修改属性值。</span></div><div class="line"><span class="built_in">Object</span>.defineProperty(a, <span class="string">"age"</span>, &#123;</div><div class="line">  <span class="attr">value</span>: <span class="number">11</span></div><div class="line">&#125;)</div><div class="line"><span class="comment">//此处不仅修改不了a的age值，js甚至会报错。</span></div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p><img src="/img/define-property/error.png" alt=""></p>
+<blockquote>
+<p>为什么会报错呢？你会觉得是writable为false引起的？其实不然，真正的罪魁祸首是configurable为false导致的。我们上面定义age属性时，描述符中configurable默认为false，即不允许通过Object.defineProperty这种方式对该属性的所有描述符进行修改，如果修改，则报错。当configurable设置为true的时候，即使我们的writable为false，我们依然可以使用Object.defineProperty对属性age进行修改。</p>
+</blockquote>
+<p>所以，我们得出的结论是：</p>
+<ul>
+<li>当大当家configurable为true时<ul>
+<li>设置writable为false，利用传统方式修改属性值无效，但是不报错。利用Object.defineProperty修改属性值生效。</li>
+<li>设置writable为true，三种方式都生效。</li>
+</ul>
+</li>
+<li>当大当家configurable为false时<ul>
+<li>设置writable为false，利用传统方式修改属性值无效，但是不报错。利用Object.defineProperty修改属性值不仅无效，而且会报错。</li>
+<li>设置writable为true，利用传统方式修改属性值生效。利用Object.defineProperty修改属性值不仅无效，而且会报错。</li>
+</ul>
+</li>
+</ul>
+<ol>
+<li>enumerable<br>enumerable默认为false，当为false时，通过Object.keys和for..in无法列举出该属性，比较简单，此处也不做代码演示。</li>
+<li>configurable<br>默认为false，当为false时，通过Object.defineProperty这种方式对configurable、value、enumerable、writable的改变通通报错。<blockquote>
+<p>这里要提一下所谓的改变的含义。此处的改变是指要修改后的值和修改前的值不一样，才叫改变。如果一样的话就不能称为改变。</p>
+</blockquote>
+</li>
+</ol>
+<p>看如下代码：<br><figure class="highlight javascript"><table><tr><td class="code"><pre><div class="line"><span class="keyword">var</span> d = &#123;&#125;</div><div class="line"><span class="comment">//定义</span></div><div class="line"><span class="built_in">Object</span>.defineProperty(d, age, &#123;</div><div class="line">  <span class="attr">value</span>: <span class="number">10</span></div><div class="line">&#125;)</div><div class="line"><span class="comment">//修改，不报错</span></div><div class="line"><span class="built_in">Object</span>.defineProperty(d, age, &#123;</div><div class="line">  <span class="attr">value</span>: <span class="number">10</span></div><div class="line">&#125;)</div><div class="line"><span class="comment">// 改变，报错</span></div><div class="line"><span class="built_in">Object</span>.defineProperty(d, age, &#123;</div><div class="line">  <span class="attr">value</span>: <span class="number">11</span></div><div class="line">&#125;)</div></pre></td></tr></table></figure></p>
+<p>明白改变和修改的区别了吧~<br>所以我们又得出一个结论：<br>当configurable设置为false时，通过Object.defineProperty这种方式所做的任何改变（请注意，这里是改变)都将引起js报错。</p>
+<h4 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h4><p>以上就是Object.defineProperty的用法，小小的一个API竟有这么多门道在里面，所以我们要怀着敬畏的态度学习JS，不要觉得JS简单，简单只是入门简单，看起来简单。</p>
+
+    </section>
+    <footer class="post-footer">
+      <section class="author">
+    <h4>fanqi</h4>
+    <p>a frontend developer</p>
+</section>
+      <!--<section class="share">
+    <h4>Share this post</h4>
+    <a class="icon-twitter" href="http://twitter.com/share?url=http://yoursite.com/2017/08/08/js-define-property/"
+       onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+        <span class="hidden">Twitter</span>
+    </a>
+    <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http://yoursite.com/2017/08/08/js-define-property/"
+       onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+        <span class="hidden">Facebook</span>
+    </a>
+    <a class="icon-google-plus" href="https://plus.google.com/share?url=http://yoursite.com/2017/08/08/js-define-property/"
+       onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+        <span class="hidden">Google+</span>
+    </a>
+</section>-->
+    </footer>
+  </article>
+  <nav class="pagination" role="pagination">
+    
+    <span class="page-number">•</span>
+    
+    <a class="older-posts" href="/2017/08/01/vue-bubble/">
+        基于vuejs的消息气泡插件
+    </a>
+    
+</nav>
+
+  <!--<div id="comment" class="comments-area">
+    <h1 class="title"><a href="#disqus_comments" name="disqus_comments">Comments</a></h1>
+
+    
+</div>-->
+</main>
+
+
+  
+<footer class="site-footer">
+  
+  <div class="inner">
+     <section class="copyright">All content copyright <a href="/">lucefer</a><br/> &copy; 2014 &bull; All rights reserved.</section>
+  </div>
+</footer>
+
+  <script src="/js/jquery.min.js"></script>
+
+<script type="text/javascript" src="/js/jquery.fitvids.js"></script>
+<script type="text/javascript" src="/js/index.js"></script>
+
+
+
+  <script type="text/javascript" src="http://tajs.qq.com/stats?sId=63051648" charset="UTF-8"></script>
+
+
+
+
+</div>
+</body>
+</html>

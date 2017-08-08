@@ -75,12 +75,39 @@
   <article class="post">
     <header class="post-header">
 
+      <h2 class="post-title"><a href="/2017/08/08/js-define-property/">Object.defineProperty</a></h2>
+    </header>
+    <section class="post-excerpt">
+      <p>
+      
+        Object.defineProperty是伴随着ES5的发布而出现的，是一个很强大的属性，著名的前端框架vuejs就是借用它实现的数据变动检测，接下来我们学习一下它的用法。
+传统方法如果不使用defineProperty，我们可以用以下两种方式定义属性：var a = &#123;&#125;// 通过.定义属性a.name = 'fanqi'// 通过属性字符串索引定义属性a["age"] = 10a.age = 20
+上面两种方式
+      
+      </p>
+      
+      <p>
+          <a href="/2017/08/08/js-define-property/" class="excerpt-link">Read More...</a>
+      </p>
+      
+    </section>
+    <span class="post-meta">
+      <time datetime="2017-08-08T08:25:05.000Z" itemprop="datePublished">
+          2017-08-08
+      </time>
+    
+</span>
+  </article>
+  
+  <article class="post">
+    <header class="post-header">
+
       <h2 class="post-title"><a href="/2017/08/01/vue-bubble/">基于vuejs的消息气泡插件</a></h2>
     </header>
     <section class="post-excerpt">
       <p>
       
-        之前介绍了一款基于vue的文本折行显示组件ellipisis-plus，今天介绍一款仿照QQ消息气泡的插件vue-bubble。
+        之前介绍了一款基于vue的文本折行显示组件ellipisis-plus，今天介绍一款仿照QQ消息气泡的插件vue-bubble，演示地址在这里。
 
 仿照QQ消息气泡想法的起源是来自掘金的安卓小伙伴们，看到他们在安卓平台实现了这种效果，所以想迁移到web上。在这里要感谢他们。
 
@@ -89,7 +116,7 @@
 实现原理
 使用SVG绘制贝塞尔曲线以及圆形气泡。
 关键点的坐标计算借鉴这位小伙伴的思路高仿QQ未读消息气泡拖拽黏连效果，非常感谢他。
-气泡抖动是在鼠标抬起
+气泡
       
       </p>
       
